@@ -45,46 +45,63 @@ fontFamily: 'Press Start 2P',
 fontSize: 20,
 });
 
-var Responses = {
-  createFrom: (obj) => {
-    Object.keys(obj).forEach((key, index) => {
-      let textObj = new PIXI.Text(obj[key].display, regP2);
+// class Question {
+//   constructor(text, responses) {
+//     this.text = text;
+//     this.responses = Responses.createFrom();
+//   }
+// }
+
+const Responses = {
+  current: null,
+  createFrom: function(list) {
+    this.current = list;
+    list.forEach((answer, index) => {
+      console.log(answer)
+  
+      // textObj.on('mouseover', () => {
+      //   triangle.x = textObj.x -25;
+      //   triangle.y = textObj.y;
+      // });
+      
+      answer.textObj.position.set(1500, window.innerHeight - (680 - index * 35));
+      app.stage.addChild(answer.textObj);
+    });
+  },
+  hide: function() {
+    this.current.forEach((answer, index) => {
+      answer.textObj.visible = false;
+    });
+  },
+  show: function() {
+    this.current.forEach((answer, index) => {
+      answer.textObj.visible = true;
+    });
+  }
+}
+
+class Answer {
+  constructor(text, action) {
+    this.text = text;
+    this.action = action
+    this.textObj = (function() {
+      let textObj = new PIXI.Text(text, regP2);
       textObj.visible = false;
       textObj.interactive = true;
   
       textObj.on('click', () => {
-        obj[key].action();
+        this.action();
       });
   
-      textObj.on('mouseover', () => {
-        triangle.x = textObj.x -25;
-        triangle.y = textObj.y;
-      });
-  
-      // console.log(index);
-      switch(index){
-        case 0:
-          textObj.position.set(1500, window.innerHeight - 680);
-          break;
-        case 1:
-          textObj.position.set(1500, window.innerHeight - 645);
-          break;
-        case 2:
-          textObj.position.set(1500, window.innerHeight - 610);
-          break;
-        case 3:
-          textObj.position.set(1500, window.innerHeight - 575);
-          break;
-      }
-  
-      console.log(textObj.y);
-  
-  
-      obj[key].textObj = textObj;
-      app.stage.addChild(textObj);
-    });
+      // textObj.on('mouseover', () => {
+      //   triangle.x = textObj.x -25;
+      //   triangle.y = textObj.y;
+      // });
+      return textObj;
+    })();  
   }
 }
+
 
 
 
@@ -118,28 +135,12 @@ app.loader
 
 let python, knights, state, sheet, background, shrek, speech, richText, title, triangle;
 
-let names = {
-  employer: {
-    display:"Employer",
-    action: showResume,
-    textObj: null
-  }, 
-  friend: {
-    display:"Friend",
-    action: () => console.log("orient"),
-    textObj: null
-  },
-  family: {
-    display:"Family",
-    action: () => console.log("grail"),
-    textObj: null
-  },
-  foe: {
-    display:"Foe",
-    action: () => console.log("Ogre"),
-    textObj: null
-  }
-};
+let names = [
+  new Answer("Employer", () => console.log("Employer")),
+  new Answer("Friend", () => console.log("Friend")),
+  new Answer("Family", () => console.log("Family")),
+  new Answer("Foe", () => console.log("Foe"))
+];
 
 let quests = {
   resume: {
@@ -163,18 +164,6 @@ let quests = {
     textObj: null
   }
 };
-
-function hideQuests() {
-  Object.keys(quests).forEach((quest, index) => {
-    quests[quest].textObj.visible = false;
-  });
-}
-
-function showQuests() {
-  Object.keys(quests).forEach((quest, index) => {
-    quests[quest].textObj.visible = true;
-  });
-}
 
 function setup() {
 
@@ -251,15 +240,15 @@ function setup() {
   // });
 
 
-  Responses.createFrom(quests);
+  Responses.createFrom(names);
 
   app.stage.addChild(richText);
 
   triangle = new PIXI.Graphics();
 
 
-  triangle.x = quests.resume.textObj.x -25;
-  triangle.y = quests.resume.textObj.y;
+  triangle.x = names[0].textObj.x -25;
+  triangle.y = names[0].textObj.y;
 
   var triangleWidth = 15,
       triangleHeight = triangleWidth,
@@ -431,12 +420,12 @@ function play(delta) {
     speech.visible = true;
     richText.visible = true;
     triangle.visible = true;
-    showQuests();
+    Responses.show();
   } else {
     speech.visible = false;
     richText.visible = false;
     triangle.visible = false;
-    hideQuests();
+    Responses.hide();
   }
 }
 
