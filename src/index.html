@@ -3,6 +3,18 @@
   <head>
     <meta charset="utf-8"/>
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <script>
+        WebFont.load({
+            custom: {
+              families: ['8bitoperator JVE Regular'],
+              urls: ['/stylesheet.css']
+            },
+            google: {
+              families: ['Press Start 2P']
+            },
+        });
+    </script>
   </head>
   <body>
     <canvas id = 'pdfjs' style='display: none'></canvas>

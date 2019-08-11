@@ -61,10 +61,45 @@ app.loader
     .add("assets/img/snake.json")
     .add("assets/img/knight.json")
     .add("assets/img/shrek2.png")
-    .add("assets/img/speech.png")
+    .add("assets/img/speech2.png")
     .load(setup);
 
-let python, knights, state, sheet, background, shrek, speech, richText, title, button;
+let python, knights, state, sheet, background, shrek, speech, richText, title, triangle;
+
+let quests = {
+  resume: {
+    display:"Explore My Résumé",
+    action: showResume,
+    textObj: null
+  }, 
+  orient: {
+    display:"Venture to The Orient",
+    action: () => console.log("orient"),
+    textObj: null
+  },
+  grail: {
+    display:"Seek the Holy Grail",
+    action: () => console.log("grail"),
+    textObj: null
+  },
+  ogre: {
+    display:"Fight the Ogre",
+    action: () => console.log("Ogre"),
+    textObj: null
+  }
+};
+
+function hideQuests() {
+  Object.keys(quests).forEach((quest, index) => {
+    quests[quest].textObj.visible = false;
+  });
+}
+
+function showQuests() {
+  Object.keys(quests).forEach((quest, index) => {
+    quests[quest].textObj.visible = true;
+  });
+}
 
 function setup() {
 
@@ -88,49 +123,96 @@ function setup() {
   
     app.stage.addChild(shrek);
 
-    speech = new PIXI.Sprite(app.loader.resources["assets/img/speech.png"].texture);
-    speech.width = speech.width/2;
+    speech = new PIXI.Sprite(app.loader.resources["assets/img/speech2.png"].texture);
+    speech.width = speech.width/1.5;
     speech.height = speech.height/2.5;
     speech.position.set(1400, window.innerHeight - 800);
     speech.visible = false;
+    // speech.scale.x=-1;
   
     app.stage.addChild(speech);
 
-    const style = new PIXI.TextStyle({
-      fontFamily: '8bitoperator JVE Regular',
-      // fontSize: 36,
-      // fontStyle: 'italic',
-      // fontWeight: 'bold',
-      // fill: ['#ffffff', '#00ff99'], // gradient
-      // stroke: '#4a1850',
-      // strokeThickness: 5,
-      // dropShadow: true,
-      // dropShadowColor: '#000000',
-      // dropShadowBlur: 4,
-      // dropShadowAngle: Math.PI / 6,
-      // dropShadowDistance: 6,
-      // wordWrap: true,
-      // wordWrapWidth: 440,
+    const boldP2 = new PIXI.TextStyle({
+      fontFamily: 'Press Start 2P',
+      fontSize: 25,
+      fontWeight: 'bold',
+  });
+
+  const regP2 = new PIXI.TextStyle({
+    fontFamily: 'Press Start 2P',
+    fontSize: 20,
   });
   
-  richText = new PIXI.Text('What is your quest?', style);
+  richText = new PIXI.Text('What is your quest?', boldP2);
   richText.position.set(1500, window.innerHeight - 750);
   richText.visible = false;
 
-  button = new PIXI.Text('View Resume', style);
-  button.position.set(1500, window.innerHeight - 650);
-  button.visible = false;
+  Object.keys(quests).forEach((quest, index) => {
+    let textObj = new PIXI.Text(quests[quest].display, regP2);
+    textObj.visible = false;
+    textObj.interactive = true;
 
-  button.interactive = true;
-  button.on('click', () => {
-    showResume();
+    textObj.on('click', () => {
+      quests[quest].action();
+    });
+
+    textObj.on('mouseover', () => {
+      triangle.x = textObj.x -25;
+      triangle.y = textObj.y;
+    });
+
+    // console.log(index);
+    switch(index){
+      case 0:
+        textObj.position.set(1500, window.innerHeight - 680);
+        break;
+      case 1:
+        textObj.position.set(1500, window.innerHeight - 645);
+        break;
+      case 2:
+        textObj.position.set(1500, window.innerHeight - 610);
+        break;
+      case 3:
+        textObj.position.set(1500, window.innerHeight - 575);
+        break;
+    }
+
+    console.log(textObj.y);
+
+
+    quests[quest].textObj = textObj;
+    app.stage.addChild(textObj);
   });
 
-
-  
   app.stage.addChild(richText);
-  app.stage.addChild(button);
 
+  triangle = new PIXI.Graphics();
+
+  triangle.x = quests.resume.textObj.x -25;
+  triangle.y = quests.resume.textObj.y;
+
+  var triangleWidth = 15,
+      triangleHeight = triangleWidth,
+      triangleHalfway = triangleWidth/2;
+
+  // draw triangle 
+  triangle.beginFill(0x000000, 1);
+  triangle.lineStyle(0, 0xFF0000, 1);
+  triangle.moveTo(0, triangleHeight);
+  triangle.lineTo(triangleWidth, triangleHalfway); 
+  triangle.lineTo(0, 0);
+  triangle.lineTo(0, triangleWidth);
+  triangle.endFill();
+
+  triangle.interactive = true;
+  triangle.buttonMode = true;
+  triangle.on("pointertap", function(e) {
+    console.log(i);
+  });
+
+triangle.visible = false;
+
+  app.stage.addChild(triangle);
 
 
 
@@ -162,6 +244,10 @@ function setup() {
     up = keyboard("ArrowUp"),
     right = keyboard("ArrowRight"),
     down = keyboard("ArrowDown");
+
+    // up.press = () => {
+      
+    // }
 
     //Left arrow key `press` method
     left.press = () => {
@@ -274,11 +360,13 @@ function play(delta) {
   if (shrek.x - python.x < 250) {
     speech.visible = true;
     richText.visible = true;
-    button.visible = true;
+    triangle.visible = true;
+    showQuests();
   } else {
     speech.visible = false;
     richText.visible = false;
-    button.visible = false;
+    triangle.visible = false;
+    hideQuests();
   }
 }
 
