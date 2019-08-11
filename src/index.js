@@ -34,6 +34,58 @@ function showResume() {
     });
 }
 
+const boldP2 = new PIXI.TextStyle({
+  fontFamily: 'Press Start 2P',
+  fontSize: 25,
+  fontWeight: 'bold',
+});
+
+const regP2 = new PIXI.TextStyle({
+fontFamily: 'Press Start 2P',
+fontSize: 20,
+});
+
+var Responses = {
+  createFrom: (obj) => {
+    Object.keys(obj).forEach((key, index) => {
+      let textObj = new PIXI.Text(obj[key].display, regP2);
+      textObj.visible = false;
+      textObj.interactive = true;
+  
+      textObj.on('click', () => {
+        obj[key].action();
+      });
+  
+      textObj.on('mouseover', () => {
+        triangle.x = textObj.x -25;
+        triangle.y = textObj.y;
+      });
+  
+      // console.log(index);
+      switch(index){
+        case 0:
+          textObj.position.set(1500, window.innerHeight - 680);
+          break;
+        case 1:
+          textObj.position.set(1500, window.innerHeight - 645);
+          break;
+        case 2:
+          textObj.position.set(1500, window.innerHeight - 610);
+          break;
+        case 3:
+          textObj.position.set(1500, window.innerHeight - 575);
+          break;
+      }
+  
+      console.log(textObj.y);
+  
+  
+      obj[key].textObj = textObj;
+      app.stage.addChild(textObj);
+    });
+  }
+}
+
 
 
 let type = "WebGL"
@@ -65,6 +117,29 @@ app.loader
     .load(setup);
 
 let python, knights, state, sheet, background, shrek, speech, richText, title, triangle;
+
+let names = {
+  employer: {
+    display:"Employer",
+    action: showResume,
+    textObj: null
+  }, 
+  friend: {
+    display:"Friend",
+    action: () => console.log("orient"),
+    textObj: null
+  },
+  family: {
+    display:"Family",
+    action: () => console.log("grail"),
+    textObj: null
+  },
+  foe: {
+    display:"Foe",
+    action: () => console.log("Ogre"),
+    textObj: null
+  }
+};
 
 let quests = {
   resume: {
@@ -132,61 +207,56 @@ function setup() {
   
     app.stage.addChild(speech);
 
-    const boldP2 = new PIXI.TextStyle({
-      fontFamily: 'Press Start 2P',
-      fontSize: 25,
-      fontWeight: 'bold',
-  });
 
-  const regP2 = new PIXI.TextStyle({
-    fontFamily: 'Press Start 2P',
-    fontSize: 20,
-  });
   
   richText = new PIXI.Text('What is your quest?', boldP2);
   richText.position.set(1500, window.innerHeight - 750);
   richText.visible = false;
 
-  Object.keys(quests).forEach((quest, index) => {
-    let textObj = new PIXI.Text(quests[quest].display, regP2);
-    textObj.visible = false;
-    textObj.interactive = true;
+  // Object.keys(obj).forEach((quest, index) => {
+  //   let textObj = new PIXI.Text(obj[quest].display, regP2);
+  //   textObj.visible = false;
+  //   textObj.interactive = true;
 
-    textObj.on('click', () => {
-      quests[quest].action();
-    });
+  //   textObj.on('click', () => {
+  //     obj[quest].action();
+  //   });
 
-    textObj.on('mouseover', () => {
-      triangle.x = textObj.x -25;
-      triangle.y = textObj.y;
-    });
+  //   textObj.on('mouseover', () => {
+  //     triangle.x = textObj.x -25;
+  //     triangle.y = textObj.y;
+  //   });
 
-    // console.log(index);
-    switch(index){
-      case 0:
-        textObj.position.set(1500, window.innerHeight - 680);
-        break;
-      case 1:
-        textObj.position.set(1500, window.innerHeight - 645);
-        break;
-      case 2:
-        textObj.position.set(1500, window.innerHeight - 610);
-        break;
-      case 3:
-        textObj.position.set(1500, window.innerHeight - 575);
-        break;
-    }
+  //   // console.log(index);
+  //   switch(index){
+  //     case 0:
+  //       textObj.position.set(1500, window.innerHeight - 680);
+  //       break;
+  //     case 1:
+  //       textObj.position.set(1500, window.innerHeight - 645);
+  //       break;
+  //     case 2:
+  //       textObj.position.set(1500, window.innerHeight - 610);
+  //       break;
+  //     case 3:
+  //       textObj.position.set(1500, window.innerHeight - 575);
+  //       break;
+  //   }
 
-    console.log(textObj.y);
+  //   console.log(textObj.y);
 
 
-    quests[quest].textObj = textObj;
-    app.stage.addChild(textObj);
-  });
+  //   obj[quest].textObj = textObj;
+  //   app.stage.addChild(textObj);
+  // });
+
+
+  Responses.createFrom(quests);
 
   app.stage.addChild(richText);
 
   triangle = new PIXI.Graphics();
+
 
   triangle.x = quests.resume.textObj.x -25;
   triangle.y = quests.resume.textObj.y;
