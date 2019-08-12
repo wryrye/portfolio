@@ -41,69 +41,122 @@ const boldP2 = new PIXI.TextStyle({
 });
 
 const regP2 = new PIXI.TextStyle({
-fontFamily: 'Press Start 2P',
-fontSize: 20,
+  fontFamily: 'Press Start 2P',
+  fontSize: 20,
 });
 
-// class Question {
-//   constructor(text, responses) {
-//     this.text = text;
-//     this.responses = Responses.createFrom();
-//   }
-// }
+class Question {
+  constructor(text, answers) {
+    this.text = text;
+    this.answers = answers;
 
-const Responses = {
-  current: null,
-  createFrom: function(list) {
-    this.current = list;
-    list.forEach((answer, index) => {
-      console.log(answer)
-  
-      // textObj.on('mouseover', () => {
-      //   triangle.x = textObj.x -25;
-      //   triangle.y = textObj.y;
-      // });
-      
+    let textObj = new PIXI.Text(text, boldP2);
+    textObj.position.set(1500, window.innerHeight - 750);
+    textObj.visible = false;
+    // app.stage.addChild(textObj);
+    this.textObj = textObj;
+
+    this.hide = function() {
+      speech.visible = false;
+      this.textObj.visible = false;
+      this.triangle.visible = false;
+      this.answers.forEach((answer, index) => {
+        answer.textObj.visible = false;
+      });
+    }
+
+    this.show = function() {
+      speech.visible = true;
+      this.textObj.visible = true;
+      this.triangle.visible = true;
+      this.answers.forEach((answer, index) => {
+        answer.textObj.visible = true;
+      });
+    }
+
+    answers.forEach((answer, index) => {  
+      answer.textObj.on('mouseover', () => {
+        this.triangle.x = answer.textObj.x -25;
+        this.triangle.y = answer.textObj.y;
+      });
+
       answer.textObj.position.set(1500, window.innerHeight - (680 - index * 35));
+      // app.stage.addChild(answer.textObj);
+    });
+
+    let triangle = new PIXI.Graphics();
+
+    triangle.x = this.answers[0].textObj.x -25;
+    triangle.y = this.answers[0].textObj.y;
+  
+    var triangleWidth = 15,
+        triangleHeight = triangleWidth,
+        triangleHalfway = triangleWidth/2;
+  
+    triangle.beginFill(0x000000, 1);
+    triangle.lineStyle(0, 0xFF0000, 1);
+    triangle.moveTo(0, triangleHeight);
+    triangle.lineTo(triangleWidth, triangleHalfway); 
+    triangle.lineTo(0, 0);
+    triangle.lineTo(0, triangleWidth);
+    triangle.endFill();
+  
+    triangle.interactive = true;
+    triangle.buttonMode = true;
+    triangle.on("pointertap", function(e) {
+      console.log(e);
+    });
+  
+    triangle.visible = false;
+  
+    // app.stage.addChild(triangle);
+    this.triangle = triangle;
+  }
+
+
+
+  attach() {
+    // app.stage.addChild(this.speech);
+    app.stage.addChild(this.textObj);
+    app.stage.addChild(this.triangle);
+    this.answers.forEach((answer) => {
       app.stage.addChild(answer.textObj);
     });
-  },
-  hide: function() {
-    this.current.forEach((answer, index) => {
-      answer.textObj.visible = false;
-    });
-  },
-  show: function() {
-    this.current.forEach((answer, index) => {
-      answer.textObj.visible = true;
+  }
+
+  remove() {
+    // this.speech.destroy();
+    this.textObj.destroy();
+    this.triangle.destroy();
+    this.answers.forEach((answer) => {
+      answer.textObj.destroy();
     });
   }
+}
+
+function nextQuestion() {
+  if (currentQuestion) currentQuestion.remove();
+  currentQuestion = questions.shift();
+  currentQuestion.attach();
 }
 
 class Answer {
   constructor(text, action) {
     this.text = text;
     this.action = action
-    this.textObj = (function() {
-      let textObj = new PIXI.Text(text, regP2);
-      textObj.visible = false;
-      textObj.interactive = true;
-  
-      textObj.on('click', () => {
-        this.action();
-      });
-  
-      // textObj.on('mouseover', () => {
-      //   triangle.x = textObj.x -25;
-      //   triangle.y = textObj.y;
-      // });
-      return textObj;
-    })();  
+
+    let textObj = new PIXI.Text(text, regP2);
+    textObj.visible = false;
+    textObj.interactive = true;
+
+    textObj.on('click', () => {
+      this.action();
+      nextQuestion();
+    });
+
+    this.textObj = textObj;
   }
 }
-
-
-
 
 let type = "WebGL"
 if(!PIXI.utils.isWebGLSupported()){
@@ -133,37 +186,34 @@ app.loader
     .add("assets/img/speech2.png")
     .load(setup);
 
-let python, knights, state, sheet, background, shrek, speech, richText, title, triangle;
+let python, knights, state, sheet, background, shrek, speech, title, currentQuestion;
 
 let names = [
   new Answer("Employer", () => console.log("Employer")),
-  new Answer("Friend", () => console.log("Friend")),
   new Answer("Family", () => console.log("Family")),
+  new Answer("Friend", () => console.log("Friend")),
   new Answer("Foe", () => console.log("Foe"))
 ];
 
-let quests = {
-  resume: {
-    display:"Explore My Résumé",
-    action: showResume,
-    textObj: null
-  }, 
-  orient: {
-    display:"Venture to The Orient",
-    action: () => console.log("orient"),
-    textObj: null
-  },
-  grail: {
-    display:"Seek the Holy Grail",
-    action: () => console.log("grail"),
-    textObj: null
-  },
-  ogre: {
-    display:"Fight the Ogre",
-    action: () => console.log("Ogre"),
-    textObj: null
-  }
-};
+let quests = [
+  new Answer("Explore My Résumé", showResume),
+  new Answer("Venture to The Orient", () => console.log("Friend")),
+  new Answer("Seek the Holy Grail", () => console.log("Family")),
+  new Answer("Fight the Ogre", () => console.log("Foe"))
+];
+
+let colors = [
+  new Answer("Yellow", () => console.log("Yellow")),
+  new Answer("Green", () => console.log("Green")),
+  new Answer("Blue", () => console.log("Blue")),
+  new Answer("Blue... No, Yellow!", () => console.log("undecided"))
+];
+
+let questions = [
+  new Question("What is your name?", names),
+  new Question("What is your quest?", quests),
+  new Question("What is your favorite color?", colors)
+]
 
 function setup() {
 
@@ -192,87 +242,18 @@ function setup() {
     speech.height = speech.height/2.5;
     speech.position.set(1400, window.innerHeight - 800);
     speech.visible = false;
-    // speech.scale.x=-1;
-  
     app.stage.addChild(speech);
+    // this.speech = speech;
 
+
+    // currentQuestion = questions.shift();
+    // currentQuestion.attach();
+
+    // currentQuestion = new Question("What is your name???", names);
+    // currentQuestion.attach();
+    nextQuestion();
 
   
-  richText = new PIXI.Text('What is your quest?', boldP2);
-  richText.position.set(1500, window.innerHeight - 750);
-  richText.visible = false;
-
-  // Object.keys(obj).forEach((quest, index) => {
-  //   let textObj = new PIXI.Text(obj[quest].display, regP2);
-  //   textObj.visible = false;
-  //   textObj.interactive = true;
-
-  //   textObj.on('click', () => {
-  //     obj[quest].action();
-  //   });
-
-  //   textObj.on('mouseover', () => {
-  //     triangle.x = textObj.x -25;
-  //     triangle.y = textObj.y;
-  //   });
-
-  //   // console.log(index);
-  //   switch(index){
-  //     case 0:
-  //       textObj.position.set(1500, window.innerHeight - 680);
-  //       break;
-  //     case 1:
-  //       textObj.position.set(1500, window.innerHeight - 645);
-  //       break;
-  //     case 2:
-  //       textObj.position.set(1500, window.innerHeight - 610);
-  //       break;
-  //     case 3:
-  //       textObj.position.set(1500, window.innerHeight - 575);
-  //       break;
-  //   }
-
-  //   console.log(textObj.y);
-
-
-  //   obj[quest].textObj = textObj;
-  //   app.stage.addChild(textObj);
-  // });
-
-
-  Responses.createFrom(names);
-
-  app.stage.addChild(richText);
-
-  triangle = new PIXI.Graphics();
-
-
-  triangle.x = names[0].textObj.x -25;
-  triangle.y = names[0].textObj.y;
-
-  var triangleWidth = 15,
-      triangleHeight = triangleWidth,
-      triangleHalfway = triangleWidth/2;
-
-  // draw triangle 
-  triangle.beginFill(0x000000, 1);
-  triangle.lineStyle(0, 0xFF0000, 1);
-  triangle.moveTo(0, triangleHeight);
-  triangle.lineTo(triangleWidth, triangleHalfway); 
-  triangle.lineTo(0, 0);
-  triangle.lineTo(0, triangleWidth);
-  triangle.endFill();
-
-  triangle.interactive = true;
-  triangle.buttonMode = true;
-  triangle.on("pointertap", function(e) {
-    console.log(i);
-  });
-
-triangle.visible = false;
-
-  app.stage.addChild(triangle);
-
 
 
     // the sprite sheet we've just loaded:
@@ -417,15 +398,9 @@ function play(delta) {
   shrek.x -= python.vx * 1.5;
 
   if (shrek.x - python.x < 250) {
-    speech.visible = true;
-    richText.visible = true;
-    triangle.visible = true;
-    Responses.show();
+    currentQuestion.show();
   } else {
-    speech.visible = false;
-    richText.visible = false;
-    triangle.visible = false;
-    Responses.hide();
+    currentQuestion.hide();
   }
 }
 
