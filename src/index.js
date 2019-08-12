@@ -1,4 +1,6 @@
 import * as PIXI from 'pixi.js';
+import Question from './question.js'
+import Answer from './answer.js'
 
 function showResume() {
     var pdfjsLib = require('pdfjs-dist');
@@ -34,129 +36,15 @@ function showResume() {
     });
 }
 
-const boldP2 = new PIXI.TextStyle({
-  fontFamily: 'Press Start 2P',
-  fontSize: 25,
-  fontWeight: 'bold',
-});
 
-const regP2 = new PIXI.TextStyle({
-  fontFamily: 'Press Start 2P',
-  fontSize: 20,
-});
-
-class Question {
-  constructor(text, answers) {
-    this.text = text;
-    this.answers = answers;
-
-    let textObj = new PIXI.Text(text, boldP2);
-    textObj.position.set(1500, window.innerHeight - 750);
-    textObj.visible = false;
-    // app.stage.addChild(textObj);
-    this.textObj = textObj;
-
-    this.hide = function() {
-      speech.visible = false;
-      this.textObj.visible = false;
-      this.triangle.visible = false;
-      this.answers.forEach((answer, index) => {
-        answer.textObj.visible = false;
-      });
-    }
-
-    this.show = function() {
-      speech.visible = true;
-      this.textObj.visible = true;
-      this.triangle.visible = true;
-      this.answers.forEach((answer, index) => {
-        answer.textObj.visible = true;
-      });
-    }
-
-    answers.forEach((answer, index) => {  
-      answer.textObj.on('mouseover', () => {
-        this.triangle.x = answer.textObj.x -25;
-        this.triangle.y = answer.textObj.y;
-      });
-
-      answer.textObj.position.set(1500, window.innerHeight - (680 - index * 35));
-      // app.stage.addChild(answer.textObj);
-    });
-
-    let triangle = new PIXI.Graphics();
-
-    triangle.x = this.answers[0].textObj.x -25;
-    triangle.y = this.answers[0].textObj.y;
-  
-    var triangleWidth = 15,
-        triangleHeight = triangleWidth,
-        triangleHalfway = triangleWidth/2;
-  
-    triangle.beginFill(0x000000, 1);
-    triangle.lineStyle(0, 0xFF0000, 1);
-    triangle.moveTo(0, triangleHeight);
-    triangle.lineTo(triangleWidth, triangleHalfway); 
-    triangle.lineTo(0, 0);
-    triangle.lineTo(0, triangleWidth);
-    triangle.endFill();
-  
-    triangle.interactive = true;
-    triangle.buttonMode = true;
-    triangle.on("pointertap", function(e) {
-      console.log(e);
-    });
-  
-    triangle.visible = false;
-  
-    // app.stage.addChild(triangle);
-    this.triangle = triangle;
-  }
-
-
-
-  attach() {
-    // app.stage.addChild(this.speech);
-    app.stage.addChild(this.textObj);
-    app.stage.addChild(this.triangle);
-    this.answers.forEach((answer) => {
-      app.stage.addChild(answer.textObj);
-    });
-  }
-
-  remove() {
-    // this.speech.destroy();
-    this.textObj.destroy();
-    this.triangle.destroy();
-    this.answers.forEach((answer) => {
-      answer.textObj.destroy();
-    });
-  }
-}
 
 function nextQuestion() {
   if (currentQuestion) currentQuestion.remove();
   currentQuestion = questions.shift();
-  currentQuestion.attach();
+  currentQuestion.attach(app);
 }
 
-class Answer {
-  constructor(text, action) {
-    this.text = text;
-    this.action = action
 
-    let textObj = new PIXI.Text(text, regP2);
-    textObj.visible = false;
-    textObj.interactive = true;
-
-    textObj.on('click', () => {
-      this.action();
-      nextQuestion();
-    });
-
-    this.textObj = textObj;
-  }
-}
 
 let type = "WebGL"
 if(!PIXI.utils.isWebGLSupported()){
@@ -189,24 +77,24 @@ app.loader
 let python, knights, state, sheet, background, shrek, speech, title, currentQuestion;
 
 let names = [
-  new Answer("Employer", () => console.log("Employer")),
-  new Answer("Family", () => console.log("Family")),
-  new Answer("Friend", () => console.log("Friend")),
-  new Answer("Foe", () => console.log("Foe"))
+  new Answer("Employer", () => console.log("Employer"), nextQuestion),
+  new Answer("Family", () => console.log("Family"), nextQuestion),
+  new Answer("Friend", () => console.log("Friend"), nextQuestion),
+  new Answer("Foe", () => console.log("Foe"), nextQuestion)
 ];
 
 let quests = [
-  new Answer("Explore My Résumé", showResume),
-  new Answer("Venture to The Orient", () => console.log("Friend")),
-  new Answer("Seek the Holy Grail", () => console.log("Family")),
-  new Answer("Fight the Ogre", () => console.log("Foe"))
+  new Answer("Explore My Résumé", showResume, nextQuestion),
+  new Answer("Venture to The Orient", () => console.log("Friend"), nextQuestion),
+  new Answer("Seek the Holy Grail", () => console.log("Family"), nextQuestion),
+  new Answer("Fight the Ogre", () => console.log("Foe"), nextQuestion)
 ];
 
 let colors = [
-  new Answer("Yellow", () => console.log("Yellow")),
-  new Answer("Green", () => console.log("Green")),
-  new Answer("Blue", () => console.log("Blue")),
-  new Answer("Blue... No, Yellow!", () => console.log("undecided"))
+  new Answer("Yellow", () => console.log("Yellow"), () => console.log("end")),
+  new Answer("Green", () => console.log("Green"), () => console.log("end")),
+  new Answer("Blue", () => console.log("Blue"), () => console.log("end")),
+  new Answer("Blue... No, Yellow!", () => console.log("undecided"), () => console.log("end"))
 ];
 
 let questions = [
@@ -234,7 +122,6 @@ function setup() {
     shrek.width = shrek.width/2.5;
     shrek.height = shrek.height/2.5;
     shrek.position.set(2400, window.innerHeight - 420);
-  
     app.stage.addChild(shrek);
 
     speech = new PIXI.Sprite(app.loader.resources["assets/img/speech2.png"].texture);
@@ -243,18 +130,8 @@ function setup() {
     speech.position.set(1400, window.innerHeight - 800);
     speech.visible = false;
     app.stage.addChild(speech);
-    // this.speech = speech;
 
-
-    // currentQuestion = questions.shift();
-    // currentQuestion.attach();
-
-    // currentQuestion = new Question("What is your name???", names);
-    // currentQuestion.attach();
     nextQuestion();
-
-  
-
 
     // the sprite sheet we've just loaded:
     sheet = app.loader.resources["assets/img/snake.json"].spritesheet;
@@ -398,8 +275,10 @@ function play(delta) {
   shrek.x -= python.vx * 1.5;
 
   if (shrek.x - python.x < 250) {
+    speech.visible = true;
     currentQuestion.show();
   } else {
+    speech.visible = false;
     currentQuestion.hide();
   }
 }
