@@ -24,41 +24,55 @@ document.body.appendChild(app.view);
 // load sprite sheet image + data file, call setup() if completed
 app.loader
   .add("assets/img/title.png")
-  .add("assets/img/world4.png")
+  .add("assets/img/world5.png")
   .add("assets/img/snake.json")
   .add("assets/img/knight.json")
-  .add("assets/img/shrek2.png")
+  .add("assets/img/shrek3.png")
   .add("assets/img/speech2.png")
   .load(setup);
 
 let python, knights, state, sheet, background, shrek, speech, title, currentQuestion, action;
+let firstColor, secondColor;
 
 let names = [
-  new Answer("Employer", () => console.log("Employer"), nextQuestion),
-  new Answer("Family", () => console.log("Family"), nextQuestion),
-  new Answer("Friend", () => console.log("Friend"), nextQuestion),
-  new Answer("Foe", () => console.log("Foe"), nextQuestion)
+  new Answer("Employer", () => console.log("Employer"), nextQuestion, 0x000000),
+  new Answer("Family", () => console.log("Family"), nextQuestion, 0x000000),
+  new Answer("Friend", () => console.log("Friend"), nextQuestion, 0x000000),
+  new Answer("Nemesis", () => console.log("Nemesis"), nextQuestion, 0x000000)
 ];
 
 let quests = [
-  new Answer("Explore My Résumé", () => action = showResume, nextQuestion),
-  new Answer("Venture to The Orient", () => action = showChinese, nextQuestion),
-  new Answer("Seek the Holy Grail", () => console.log("Family"), nextQuestion),
-  new Answer("Fight the Ogre", () => console.log("Foe"), nextQuestion)
+  new Answer("Explore My Résumé", () => action = showResume, nextQuestion, 0x000000),
+  new Answer("Venture to The Orient", () => action = showChinese, nextQuestion, 0x000000),
+  new Answer("Seek the Holy Grail", () => console.log("Family"), nextQuestion, 0x000000),
+  new Answer("Fight the Ogre", () => console.log("Foe"), nextQuestion, 0x000000)
 ];
 
 let colors = [
-  new Answer("Yellow", () => console.log("Yellow"), doAction),
-  new Answer("Green", () => console.log("Green"), doAction),
-  new Answer("Blue", () => console.log("Blue"), doAction),
-  new Answer("Blue... No, Yellow!", () => console.log("undecided"), () => console.log("TBA"))
+  new Answer("Red", () => firstColor = "Red", nextQuestion, 0xFF0000),
+  new Answer("Yellow", () => firstColor = "Yellow", nextQuestion, 0xFFFF00),
+  new Answer("Green", () => firstColor = "Green", nextQuestion, 0x00FF00),
+  new Answer("Blue", () => firstColor = "Blue", nextQuestion, 0x0000FF),
+];
+
+let confirm = [
+  new Answer("Green", () => secondColor = "Green", compareColors, 0xFF0000),
+  new Answer("Blue", () => secondColor = "Blue", compareColors, 0xFFFF00),
+  new Answer("Red", () => secondColor = "Red", compareColors, 0x00FF00),
+  new Answer("Yellow", () => secondColor = "Yellow", compareColors , 0x0000FF),
 ];
 
 let questions = [
-  new Question("What is your name?", names),
-  new Question("What is your quest?", quests),
-  new Question("What is your favorite color?", colors)
+  new Question("What is your NAME?", names),
+  new Question("What is your QUEST?", quests),
+  new Question("What is your favorite COLOR?", colors), 
+  new Question("CONFIRM your favorite COLOR.", confirm),
+  new Question("GET OUT OF MY SWAMP!!!", confirm)
 ]
+
+function compareColors() {
+  firstColor == secondColor ? doAction() : nextQuestion()
+}
 
 function nextQuestion() {
   if (currentQuestion) currentQuestion.remove();
@@ -73,8 +87,8 @@ function doAction() {
 function setup() {
 
   // load sprites
-  background = new PIXI.Sprite(app.loader.resources["assets/img/world4.png"].texture);
-  background.width = window.innerWidth * 2.5;
+  background = new PIXI.Sprite(app.loader.resources["assets/img/world5.png"].texture);
+  background.width = window.innerHeight * 4;
   background.height = window.innerHeight;
   app.stage.addChild(background);
 
@@ -86,31 +100,32 @@ function setup() {
   title.anchor.y = .5
   app.stage.addChild(title);
 
-  shrek = new PIXI.Sprite(app.loader.resources["assets/img/shrek2.png"].texture);
-  shrek.width = shrek.width / 2.5;
-  shrek.height = shrek.height / 2.5;
-  shrek.position.set(2400, window.innerHeight - 420);
+  let shrekAR = .71;
+  shrek = new PIXI.Sprite(app.loader.resources["assets/img/shrek3.png"].texture);
+  shrek.width = window.innerHeight * .5 * shrekAR;
+  shrek.height = window.innerHeight * .5;
+  shrek.position.set(window.innerWidth * 1.4, window.innerHeight * .45);
   app.stage.addChild(shrek);
 
   speech = new PIXI.Sprite(app.loader.resources["assets/img/speech2.png"].texture);
-  speech.width = speech.width / 1.5;
-  speech.height = speech.height / 2.5;
-  speech.position.set(1400, window.innerHeight - 800);
+  speech.width = window.innerHeight * .75;
+  speech.height = window.innerHeight * .5;
+  speech.position.set(window.innerWidth * .6, window.innerHeight * .05);
   speech.visible = false;
   app.stage.addChild(speech);
 
   sheet = app.loader.resources["assets/img/snake.json"].spritesheet;
   python = new PIXI.AnimatedSprite(sheet.animations["snake_idle"]);
-  python.position.set(600, window.innerHeight - 190); // almost bottom-left corner of the canvas
-  python.animationSpeed = 0.4;
+  python.position.set(window.innerHeight * .69, window.innerHeight * .8); // almost bottom-left corner of the canvas
+  python.animationSpeed = 0.3;
   python.anchor.x = .5
   python.anchor.y = .5
   python.scale.x = 1
   python.vx = 0
   python.vy = 0
   python.play();
-  python.width = 1000;
-  python.height = 1000;
+  python.width = window.innerHeight*1.3;
+  python.height = window.innerHeight*1.3;
   app.stage.addChild(python);
 
   addKnights();
@@ -131,10 +146,11 @@ function setup() {
     python.vy = 0;
     python.scale.x = -1
 
-    python.width = 1000;
-    python.height = 1000;
+    python.width = window.innerHeight*1.3;
+    python.height = window.innerHeight*1.3;
     python.textures = sheet.animations["snake_run"];
     python.play()
+    knightsLeft();
     playKnights();
   };
 
@@ -142,8 +158,8 @@ function setup() {
     if (!right.isDown && python.vy === 0) {
       python.vx = 0;
       python.textures = sheet.animations["snake_idle"];
-      python.width = 1000;
-      python.height = 1000;
+      python.width = window.innerHeight*1.3;
+      python.height = window.innerHeight*1.3;
       python.play()
       stopKnights();
     }
@@ -155,9 +171,10 @@ function setup() {
     python.vy = 0;
     python.scale.x = 1
     python.textures = sheet.animations["snake_run"];
-    python.width = 1000;
-    python.height = 1000;
+    python.width = window.innerHeight*1.3;
+    python.height = window.innerHeight*1.3;
     python.play()
+    knightsRight();
     playKnights();
   };
 
@@ -165,8 +182,8 @@ function setup() {
     if (!left.isDown && python.vy === 0) {
       python.vx = 0;
       python.textures = sheet.animations["snake_idle"];
-      python.width = 1000;
-      python.height = 1000;
+      python.width = window.innerHeight*1.3;
+      python.height = window.innerHeight*1.3;
       python.play()
       stopKnights();
     }
@@ -202,7 +219,12 @@ function play(delta) {
   background.x -= python.vx * 1.5;
   shrek.x -= python.vx * 1.5;
 
-  if (shrek.x - python.x < 250) {
+  // if (python.x < window.innerHeight * .66) {
+  //   python.x = window.innerHeight * .66;
+  // }
+
+
+  if (shrek.x - python.x < window.innerWidth * .1) {
     speech.visible = true;
     currentQuestion.show();
   } else {
@@ -267,7 +289,7 @@ function addKnights() {
     let knight = new PIXI.AnimatedSprite(sheet2.animations["knight"]);
 
     // configure + start animation:
-    knight.position.set((i + 1) * 100, window.innerHeight - 180); // almost bottom-left corner of the canvas
+    knight.position.set((i + 1) * window.innerHeight/7, window.innerHeight * 8/10); // almost bottom-left corner of the canvas
     knight.animationSpeed = 0.25;
     knight.anchor.x = .5
     knight.anchor.y = .5
@@ -276,8 +298,8 @@ function addKnights() {
     knight.vy = 0
     knight.gotoAndStop(1);
 
-    knight.width = 300;
-    knight.height = 300;
+    knight.width = window.innerHeight/2.2;
+    knight.height = window.innerHeight/2.2;
 
     // add it to the stage and render!
     app.stage.addChild(knight);
@@ -301,5 +323,17 @@ function moveKnights() {
   knights.forEach((knight, index) => {
     knight.x += python.vx;
     knight.y += python.vy
+  });
+}
+
+function knightsLeft() {
+  knights.forEach((knight, index) => {
+    if (knight.scale.x > 1) knight.scale.x *= -1;
+  });
+}
+
+function knightsRight() {
+  knights.forEach((knight, index) => {
+    if (knight.scale.x < 1) knight.scale.x *= -1;
   });
 }

@@ -1,33 +1,33 @@
 import * as PIXI from 'pixi.js';
-import * as Fonts from './fonts.js'
+import createFont from './fonts.js'
 
 export default class Question {
     constructor(text, answers) {
       this.text = text;
       this.answers = answers;
   
-      let textObj = new PIXI.Text(text, Fonts.boldP2);
-      textObj.position.set(1500, window.innerHeight - 750);
+      let textObj = new PIXI.Text(text, createFont(0x000000, window.innerHeight * .03, 'bold'));
+      textObj.position.set(window.innerWidth * .65, window.innerHeight * .12);
       textObj.visible = false;
       this.textObj = textObj;
   
       answers.forEach((answer, index) => {  
         answer.textObj.on('mouseover', () => {
-          this.triangle.x = answer.textObj.x -25;
+          this.triangle.x = answer.textObj.x - innerHeight * .025;
           this.triangle.y = answer.textObj.y;
         });
   
-        answer.textObj.position.set(1500, window.innerHeight - (680 - index * 35));
+        answer.textObj.position.set(window.innerWidth * .65, window.innerHeight * .15 + (window.innerHeight * .05 + index * innerHeight * .04));
         // app.stage.addChild(answer.textObj);
       });
   
       let triangle = new PIXI.Graphics();
       triangle.visible = false;
   
-      triangle.x = this.answers[0].textObj.x -25;
+      triangle.x = this.answers[0].textObj.x - innerHeight * .025;
       triangle.y = this.answers[0].textObj.y;
     
-      var triangleWidth = 15,
+      var triangleWidth = innerHeight * .015,
           triangleHeight = triangleWidth,
           triangleHalfway = triangleWidth/2;
     
