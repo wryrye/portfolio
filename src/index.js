@@ -29,6 +29,7 @@ app.loader
   .add("assets/img/knight.json")
   .add("assets/img/shrek3.png")
   .add("assets/img/speech2.png")
+  .add("assets/img/shrek_mad.png")
   .load(setup);
 
 let python, knights, state, sheet, background, shrek, speech, title, currentQuestion, action;
@@ -71,7 +72,7 @@ let questions = [
 ]
 
 function compareColors() {
-  firstColor == secondColor ? doAction() : nextQuestion()
+  firstColor == secondColor ? doAction() : resetGame();
 }
 
 function nextQuestion() {
@@ -269,6 +270,31 @@ function play(delta) {
     speech.visible = false;
     currentQuestion.hide();
   }
+}
+
+function flee(delta) {
+  python.x += python.vx;
+  python.y += python.vy
+  moveKnights();
+  background.x -= python.vx * 1.5;
+  // shrek.x -= python.vx * 1.5;
+
+  python.scale.x = -1
+
+  python.width = window.innerHeight*1.3;
+  python.height = window.innerHeight*1.3;
+  python.textures = sheet.animations["snake_run"];
+  python.play()
+  knightsLeft();
+  playKnights();
+
+}
+
+function resetGame() {
+  // nextQuestion();
+  shrek.texture = app.loader.resources["assets/img/shrek_mad.png"].texture;
+  python.vx = -3
+  state = flee;
 }
 
 function keyboard(value) {
