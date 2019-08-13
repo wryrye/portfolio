@@ -24,7 +24,7 @@ document.body.appendChild(app.view);
 // load sprite sheet image + data file, call setup() if completed
 app.loader
   .add("assets/img/title.png")
-  .add("assets/img/world5.png")
+  .add("assets/img/world6.png")
   .add("assets/img/snake.json")
   .add("assets/img/knight.json")
   .add("assets/img/shrek3.png")
@@ -87,7 +87,7 @@ function doAction() {
 function setup() {
 
   // load sprites
-  background = new PIXI.Sprite(app.loader.resources["assets/img/world5.png"].texture);
+  background = new PIXI.Sprite(app.loader.resources["assets/img/world6.png"].texture);
   background.width = window.innerHeight * 4;
   background.height = window.innerHeight;
   app.stage.addChild(background);
@@ -116,12 +116,12 @@ function setup() {
 
   sheet = app.loader.resources["assets/img/snake.json"].spritesheet;
   python = new PIXI.AnimatedSprite(sheet.animations["snake_idle"]);
-  python.position.set(window.innerHeight * .69, window.innerHeight * .8); // almost bottom-left corner of the canvas
+  python.position.set(window.innerHeight * .69 - window.innerHeight, window.innerHeight * .8); // almost bottom-left corner of the canvas
   python.animationSpeed = 0.3;
   python.anchor.x = .5
   python.anchor.y = .5
   python.scale.x = 1
-  python.vx = 0
+  python.vx = 1
   python.vy = 0
   python.play();
   python.width = window.innerHeight*1.3;
@@ -129,6 +129,15 @@ function setup() {
   app.stage.addChild(python);
 
   addKnights();
+
+  python.vx = 2;
+  python.scale.x = 1
+  python.textures = sheet.animations["snake_run"];
+  python.width = window.innerHeight*1.3;
+  python.height = window.innerHeight*1.3;
+  python.play()
+  knightsRight();
+  playKnights();
 
 
   // load first question
@@ -139,6 +148,30 @@ function setup() {
     right = keyboard("ArrowRight"),
     up = keyboard("ArrowUp"),
     down = keyboard("ArrowDown");
+
+  // Right
+  right.press = () => {
+    python.vx = 1;
+    python.vy = 0;
+    python.scale.x = 1
+    python.textures = sheet.animations["snake_run"];
+    python.width = window.innerHeight*1.3;
+    python.height = window.innerHeight*1.3;
+    python.play()
+    knightsRight();
+    playKnights();
+  };
+
+  right.release = () => {
+    if (!left.isDown && python.vy === 0) {
+      python.vx = 0;
+      python.textures = sheet.animations["snake_idle"];
+      python.width = window.innerHeight*1.3;
+      python.height = window.innerHeight*1.3;
+      python.play()
+      stopKnights();
+    }
+  };
 
   // Left
   left.press = () => {
@@ -165,32 +198,11 @@ function setup() {
     }
   };
 
-  // Right
-  right.press = () => {
-    python.vx = 1;
-    python.vy = 0;
-    python.scale.x = 1
-    python.textures = sheet.animations["snake_run"];
-    python.width = window.innerHeight*1.3;
-    python.height = window.innerHeight*1.3;
-    python.play()
-    knightsRight();
-    playKnights();
-  };
 
-  right.release = () => {
-    if (!left.isDown && python.vy === 0) {
-      python.vx = 0;
-      python.textures = sheet.animations["snake_idle"];
-      python.width = window.innerHeight*1.3;
-      python.height = window.innerHeight*1.3;
-      python.play()
-      stopKnights();
-    }
-  };
 
   //Set the game state
-  state = play;
+  // state = play;
+  state = intro;
 
   //Start the game loop 
   app.ticker.add(delta => gameLoop(delta));
@@ -201,16 +213,42 @@ function gameLoop(delta) {
   state(delta);
 }
 
-function play(delta) {
+let wait = 0;
+
+function intro(delta) {
   const ratio = 16 / 9;
 
   if (title.height < window.innerHeight) {
     title.width += 6 * ratio;
     title.height += 6;
   } else {
-    title.alpha -= .01;
+    wait++;
+    if (wait > 200) {
+      title.alpha -= .01;
+    }
   }
 
+  if (python.x < window.innerHeight * .69) {
+    python.x += python.vx;
+    moveKnights();
+  } else {
+    python.vx = 0;
+    python.textures = sheet.animations["snake_idle"];
+    python.width = window.innerHeight*1.3;
+    python.height = window.innerHeight*1.3;
+    python.play()
+    stopKnights();
+
+    if (title.alpha <= 0) {
+      state = play;
+    }
+  }
+
+
+
+}
+
+function play(delta) {
 
   //Use the python's velocity to make it move
   python.x += python.vx;
@@ -289,7 +327,7 @@ function addKnights() {
     let knight = new PIXI.AnimatedSprite(sheet2.animations["knight"]);
 
     // configure + start animation:
-    knight.position.set((i + 1) * window.innerHeight/7, window.innerHeight * 8/10); // almost bottom-left corner of the canvas
+    knight.position.set((i + 1) * window.innerHeight/7 - window.innerHeight, window.innerHeight * 8/10); // almost bottom-left corner of the canvas
     knight.animationSpeed = 0.25;
     knight.anchor.x = .5
     knight.anchor.y = .5
