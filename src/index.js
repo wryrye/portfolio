@@ -3,23 +3,21 @@ import Question from './question.js'
 import Answer from './answer.js'
 import { showResume, showChinese } from './util.js';
 
-let type = "WebGL"
-if (!PIXI.utils.isWebGLSupported()) {
-  type = "canvas"
-}
-
 let app = new PIXI.Application({
   width: window.innerWidth,
   height: window.innerHeight,
   antialias: true,
   transparent: false,
   resolution: 1
-}
-);
+});
 
-document.body.appendChild(app.view);
+let view = app.view,
+    loader = app.loader,
+    resources = app.loader.resources;
 
-app.loader
+document.body.appendChild(view);
+
+loader
   .add("title", "assets/img/title.png")
   .add("world", "assets/img/world6.png")
   .add("python", "assets/img/snake.json")
@@ -69,6 +67,7 @@ let questions = [
 ]
 
 function compareColors() {
+  console.log(firstColor == secondColor);
   firstColor == secondColor ? doAction() : resetGame();
 }
 
@@ -85,12 +84,12 @@ function doAction() {
 function setup() {
 
   // load sprites
-  background = new PIXI.Sprite(app.loader.resources.world.texture);
+  background = new PIXI.Sprite(resources.world.texture);
   background.width = window.innerHeight * 4;
   background.height = window.innerHeight;
   app.stage.addChild(background);
 
-  title = new PIXI.Sprite(app.loader.resources.title.texture);
+  title = new PIXI.Sprite(resources.title.texture);
   title.width = 0;
   title.height = 0;
   title.position.set(window.innerWidth / 2, window.innerHeight / 2);
@@ -99,20 +98,20 @@ function setup() {
   app.stage.addChild(title);
 
   let shrekAR = .71;
-  shrek = new PIXI.Sprite(app.loader.resources.ogre.texture);
+  shrek = new PIXI.Sprite(resources.ogre.texture);
   shrek.width = window.innerHeight * .5 * shrekAR;
   shrek.height = window.innerHeight * .5;
   shrek.position.set(window.innerWidth * 1.4, window.innerHeight * .45);
   app.stage.addChild(shrek);
 
-  speech = new PIXI.Sprite(app.loader.resources.speech.texture);
+  speech = new PIXI.Sprite(resources.speech.texture);
   speech.width = window.innerHeight * .75;
   speech.height = window.innerHeight * .5;
   speech.position.set(window.innerWidth * .6, window.innerHeight * .05);
   speech.visible = false;
   app.stage.addChild(speech);
 
-  sheet = app.loader.resources.python.spritesheet;
+  sheet = resources.python.spritesheet;
   python = new PIXI.AnimatedSprite(sheet.animations["snake_idle"]);
   python.position.set(window.innerHeight * .69 - window.innerHeight, window.innerHeight * .8); // almost bottom-left corner of the canvas
   python.animationSpeed = 0.3;
@@ -289,7 +288,7 @@ function flee(delta) {
 
 function resetGame() {
   // nextQuestion();
-  shrek.texture = app.loader.resources.madeOgre.texture;
+  shrek.texture = resources.madOgre.texture;
   python.vx = -3
   state = flee;
 }
@@ -342,7 +341,7 @@ function keyboard(value) {
 }
 
 function addKnights() {
-  let sheet2 = app.loader.resources.knight.spritesheet;
+  let sheet2 = resources.knight.spritesheet;
   knights = []
 
   for (let i = 0; i < 3; i++) {
