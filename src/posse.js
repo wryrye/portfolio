@@ -19,8 +19,7 @@ export default class Posse {
         let follower = new PIXI.AnimatedSprite(this.resources[this.follower].spritesheet.animations[this.follower]);    
         follower.position.set((i + 1) * window.innerHeight/7 - window.innerHeight, window.innerHeight * 8/10);
         follower.animationSpeed = 0.25;
-        follower.anchor.x = .5
-        follower.anchor.y = .5
+        follower.anchor.set(0.5);
         follower.scale.x = 1
         follower.vx = 0
         follower.vy = 0
