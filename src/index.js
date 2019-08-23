@@ -23,7 +23,8 @@ let app = new PIXI.Application({
 
 let view = app.view,
     loader = app.loader,
-    resources = app.loader.resources;
+    resources = app.loader.resources,
+    stage = app.stage;
 
 document.body.appendChild(view);
 
@@ -44,13 +45,13 @@ function setUp() {
   world = new PIXI.Sprite(resources.world.texture);
   world.width = window.innerHeight * 4;
   world.height = window.innerHeight;
-  app.stage.addChild(world);
+  stage.addChild(world);
 
   title = new PIXI.Sprite(resources.title.texture);
   title.width = title.height = 0;
   title.position.set(window.innerWidth / 2, window.innerHeight / 2);
   title.anchor.set(0.5);
-  app.stage.addChild(title);
+  stage.addChild(title);
 
   let pythonSheet = resources.python.spritesheet;
   python = new PIXI.AnimatedSprite(pythonSheet.animations["snake_idle"]);
@@ -63,7 +64,7 @@ function setUp() {
   python.vx = 1
   python.vy = 0
   python.play();
-  app.stage.addChild(python);
+  stage.addChild(python);
 
   posse = new Posse(app, python, "knight");
 
@@ -72,14 +73,14 @@ function setUp() {
   ogre.width = window.innerHeight * .5 * ogreAR;
   ogre.height = window.innerHeight * .5;
   ogre.position.set(window.innerWidth * 1.4, window.innerHeight * .45);
-  app.stage.addChild(ogre);
+  stage.addChild(ogre);
 
   speech = new PIXI.Sprite(resources.speech.texture);
   speech.width = window.innerHeight * .75;
   speech.height = window.innerHeight * .5;
   speech.position.set(window.innerWidth * .6, window.innerHeight * .05);
   speech.visible = false;
-  app.stage.addChild(speech);
+  stage.addChild(speech);
 
   // python intro state
   python.vx = 2;
