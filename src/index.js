@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import Keyboard from './keyboard.js'
 import Question from './question.js'
 import Answer from './answer.js'
 import { showResume, showChinese } from './util.js';
@@ -126,29 +127,21 @@ function setup() {
   python.height = window.innerHeight*1.3;
   app.stage.addChild(python);
 
-  addKnights();
-
   python.vx = 2;
   python.scale.x = 1
   python.textures = python.sheet.animations["snake_run"];
   python.width = window.innerHeight*1.3;
   python.height = window.innerHeight*1.3;
   python.play()
+
+  addKnights();
   knightsRight();
   playKnights();
 
+  // configure keyboard
+  let keyboard = new Keyboard();
 
-  // load first question
-  nextQuestion();
-
-
-  let left = keyboard("ArrowLeft"),
-    right = keyboard("ArrowRight"),
-    up = keyboard("ArrowUp"),
-    down = keyboard("ArrowDown");
-
-  // Right
-  right.press = () => {
+  keyboard.right.press = () => {
     python.vx = 1;
     python.vy = 0;
     python.scale.x = 1
@@ -160,8 +153,8 @@ function setup() {
     playKnights();
   };
 
-  right.release = () => {
-    if (!left.isDown && python.vy === 0) {
+  keyboard.right.release = () => {
+    if (!keyboard.left.isDown && python.vy === 0) {
       python.vx = 0;
       python.textures = python.sheet.animations["snake_idle"];
       python.width = window.innerHeight*1.3;
@@ -172,7 +165,7 @@ function setup() {
   };
 
   // Left
-  left.press = () => {
+  keyboard.left.press = () => {
     python.vx = -1;
     python.vy = 0;
     python.scale.x = -1
@@ -185,8 +178,8 @@ function setup() {
     playKnights();
   };
 
-  left.release = () => {
-    if (!right.isDown && python.vy === 0) {
+  keyboard.left.release = () => {
+    if (!keyboard.right.isDown && python.vy === 0) {
       python.vx = 0;
       python.textures = python.sheet.animations["snake_idle"];
       python.width = window.innerHeight*1.3;
@@ -197,17 +190,18 @@ function setup() {
   };
 
 
+  // load first question
+  nextQuestion();
 
-  //Set the game state
-  // state = play;
+  // set the game state
   state = intro;
 
-  //Start the game loop 
+  // start the game loop 
   app.ticker.add(delta => gameLoop(delta));
 }
 
 function gameLoop(delta) {
-  //Update the current game state:
+  // update the current game state:
   state(delta);
 }
 
@@ -292,53 +286,6 @@ function resetGame() {
   shrek.texture = resources.madOgre.texture;
   python.vx = -3
   state = flee;
-}
-
-function keyboard(value) {
-  let key = {};
-  key.value = value;
-  key.isDown = false;
-  key.isUp = true;
-  key.press = undefined;
-  key.release = undefined;
-  //The `downHandler`
-  key.downHandler = event => {
-    if (event.key === key.value) {
-      if (key.isUp && key.press) key.press();
-      key.isDown = true;
-      key.isUp = false;
-      event.preventDefault();
-    }
-  };
-
-  //The `upHandler`
-  key.upHandler = event => {
-    if (event.key === key.value) {
-      if (key.isDown && key.release) key.release();
-      key.isDown = false;
-      key.isUp = true;
-      event.preventDefault();
-    }
-  };
-
-  //Attach event listeners
-  const downListener = key.downHandler.bind(key);
-  const upListener = key.upHandler.bind(key);
-
-  window.addEventListener(
-    "keydown", downListener, false
-  );
-  window.addEventListener(
-    "keyup", upListener, false
-  );
-
-  // Detach event listeners
-  key.unsubscribe = () => {
-    window.removeEventListener("keydown", downListener);
-    window.removeEventListener("keyup", upListener);
-  };
-
-  return key;
 }
 
 function addKnights() {
