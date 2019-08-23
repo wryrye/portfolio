@@ -8,7 +8,6 @@ if (!PIXI.utils.isWebGLSupported()) {
   type = "canvas"
 }
 
-//Create a Pixi Application
 let app = new PIXI.Application({
   width: window.innerWidth,
   height: window.innerHeight,
@@ -18,18 +17,16 @@ let app = new PIXI.Application({
 }
 );
 
-//Add the canvas that Pixi automatically created for you to the HTML document
 document.body.appendChild(app.view);
 
-// load sprite sheet image + data file, call setup() if completed
 app.loader
-  .add("assets/img/title.png")
-  .add("assets/img/world6.png")
-  .add("assets/img/snake.json")
-  .add("assets/img/knight.json")
-  .add("assets/img/shrek3.png")
-  .add("assets/img/speech2.png")
-  .add("assets/img/shrek_mad.png")
+  .add("title", "assets/img/title.png")
+  .add("world", "assets/img/world6.png")
+  .add("python", "assets/img/snake.json")
+  .add("knight", "assets/img/knight.json")
+  .add("ogre", "assets/img/shrek3.png")
+  .add("madOgre", "assets/img/shrek_mad.png")
+  .add("speech", "assets/img/speech2.png")
   .load(setup);
 
 let python, knights, state, sheet, background, shrek, speech, title, currentQuestion, action;
@@ -88,12 +85,12 @@ function doAction() {
 function setup() {
 
   // load sprites
-  background = new PIXI.Sprite(app.loader.resources["assets/img/world6.png"].texture);
+  background = new PIXI.Sprite(app.loader.resources.world.texture);
   background.width = window.innerHeight * 4;
   background.height = window.innerHeight;
   app.stage.addChild(background);
 
-  title = new PIXI.Sprite(app.loader.resources["assets/img/title.png"].texture);
+  title = new PIXI.Sprite(app.loader.resources.title.texture);
   title.width = 0;
   title.height = 0;
   title.position.set(window.innerWidth / 2, window.innerHeight / 2);
@@ -102,20 +99,20 @@ function setup() {
   app.stage.addChild(title);
 
   let shrekAR = .71;
-  shrek = new PIXI.Sprite(app.loader.resources["assets/img/shrek3.png"].texture);
+  shrek = new PIXI.Sprite(app.loader.resources.ogre.texture);
   shrek.width = window.innerHeight * .5 * shrekAR;
   shrek.height = window.innerHeight * .5;
   shrek.position.set(window.innerWidth * 1.4, window.innerHeight * .45);
   app.stage.addChild(shrek);
 
-  speech = new PIXI.Sprite(app.loader.resources["assets/img/speech2.png"].texture);
+  speech = new PIXI.Sprite(app.loader.resources.speech.texture);
   speech.width = window.innerHeight * .75;
   speech.height = window.innerHeight * .5;
   speech.position.set(window.innerWidth * .6, window.innerHeight * .05);
   speech.visible = false;
   app.stage.addChild(speech);
 
-  sheet = app.loader.resources["assets/img/snake.json"].spritesheet;
+  sheet = app.loader.resources.python.spritesheet;
   python = new PIXI.AnimatedSprite(sheet.animations["snake_idle"]);
   python.position.set(window.innerHeight * .69 - window.innerHeight, window.innerHeight * .8); // almost bottom-left corner of the canvas
   python.animationSpeed = 0.3;
@@ -292,7 +289,7 @@ function flee(delta) {
 
 function resetGame() {
   // nextQuestion();
-  shrek.texture = app.loader.resources["assets/img/shrek_mad.png"].texture;
+  shrek.texture = app.loader.resources.madeOgre.texture;
   python.vx = -3
   state = flee;
 }
@@ -345,7 +342,7 @@ function keyboard(value) {
 }
 
 function addKnights() {
-  let sheet2 = app.loader.resources["assets/img/knight.json"].spritesheet;
+  let sheet2 = app.loader.resources.knight.spritesheet;
   knights = []
 
   for (let i = 0; i < 3; i++) {
