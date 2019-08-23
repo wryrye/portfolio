@@ -2,10 +2,12 @@ import * as PIXI from 'pixi.js';
 import Keyboard from './keyboard.js'
 import Question from './question.js'
 import Answer from './answer.js'
+import Posse from './posse.js'
+
 import { showResume, showChinese } from './util.js';
 
 // pixi sprite variables
-let world, title, python, knights, ogre, speech;
+let world, title, python, posse, ogre, speech;
 
 // other game variables
 let state, currentQuestion, action, firstColor, secondColor;
@@ -67,9 +69,7 @@ function setUp() {
   python.height = window.innerHeight*1.3;
   app.stage.addChild(python);
 
-  addKnights();
-  knightsRight();
-  playKnights();
+  posse = new Posse(app, python);
 
   let ogreAR = .71;
   ogre = new PIXI.Sprite(resources.ogre.texture);
@@ -104,8 +104,8 @@ function setUp() {
     python.width = window.innerHeight*1.3;
     python.height = window.innerHeight*1.3;
     python.play()
-    knightsRight();
-    playKnights();
+    posse.knightsRight();
+    posse.playKnights();
   };
 
   keyboard.right.release = () => {
@@ -115,7 +115,7 @@ function setUp() {
       python.width = window.innerHeight*1.3;
       python.height = window.innerHeight*1.3;
       python.play()
-      stopKnights();
+      posse.stopKnights();
     }
   };
 
@@ -128,8 +128,8 @@ function setUp() {
     python.height = window.innerHeight*1.3;
     python.textures = python.sheet.animations["snake_run"];
     python.play()
-    knightsLeft();
-    playKnights();
+    posse.knightsLeft();
+    posse.playKnights();
   };
 
   keyboard.left.release = () => {
@@ -139,7 +139,7 @@ function setUp() {
       python.width = window.innerHeight*1.3;
       python.height = window.innerHeight*1.3;
       python.play()
-      stopKnights();
+      posse.stopKnights();
     }
   };
 
@@ -178,14 +178,14 @@ function intro(delta) {
 
   if (python.x < window.innerHeight * .69) {
     python.x += python.vx;
-    moveKnights();
+    posse.moveKnights();
   } else {
     python.vx = 0;
     python.textures = python.sheet.animations["snake_idle"];
     python.width = window.innerHeight*1.3;
     python.height = window.innerHeight*1.3;
     python.play()
-    stopKnights();
+    posse.stopKnights();
 
     if (title.alpha <= 0) {
       state = play;
@@ -198,7 +198,7 @@ function play(delta) {
   //Use the python's velocity to make it move
   python.x += python.vx;
   python.y += python.vy
-  moveKnights();
+  posse.moveKnights();
   world.x -= python.vx * 1.5;
   ogre.x -= python.vx * 1.5;
 
@@ -219,7 +219,7 @@ function play(delta) {
 function flee(delta) {
   python.x += python.vx;
   python.y += python.vy
-  moveKnights();
+  posse.moveKnights();
   world.x -= python.vx * 1.5;
   // shrek.x -= python.vx * 1.5;
 
@@ -229,8 +229,8 @@ function flee(delta) {
   python.height = window.innerHeight*1.3;
   python.textures = python.sheet.animations["snake_run"];
   python.play()
-  knightsLeft();
-  playKnights();
+  posse.knightsLeft();
+  posse.playKnights();
 
 }
 
@@ -258,63 +258,7 @@ function resetGame() {
   state = flee;
 }
 
-function addKnights() {
-  let sheet2 = resources.knight.spritesheet;
-  knights = []
 
-  for (let i = 0; i < 3; i++) {
-    // create an animated sprite
-    let knight = new PIXI.AnimatedSprite(sheet2.animations["knight"]);
-
-    // configure + start animation:
-    knight.position.set((i + 1) * window.innerHeight/7 - window.innerHeight, window.innerHeight * 8/10); // almost bottom-left corner of the canvas
-    knight.animationSpeed = 0.25;
-    knight.anchor.x = .5
-    knight.anchor.y = .5
-    knight.scale.x = 1
-    knight.vx = 0
-    knight.vy = 0
-    knight.gotoAndStop(1);
-
-    knight.width = window.innerHeight/2.2;
-    knight.height = window.innerHeight/2.2;
-
-    // add it to the stage and render!
-    app.stage.addChild(knight);
-    knights.push(knight)
-  }
-}
-
-function playKnights() {
-  knights.forEach((knight, index) => {
-    knight.play();
-  });
-}
-
-function stopKnights() {
-  knights.forEach((knight, index) => {
-    knight.gotoAndStop(1);
-  });
-}
-
-function moveKnights() {
-  knights.forEach((knight, index) => {
-    knight.x += python.vx;
-    knight.y += python.vy
-  });
-}
-
-function knightsLeft() {
-  knights.forEach((knight, index) => {
-    if (knight.scale.x > 1) knight.scale.x *= -1;
-  });
-}
-
-function knightsRight() {
-  knights.forEach((knight, index) => {
-    if (knight.scale.x < 1) knight.scale.x *= -1;
-  });
-}
 
 // data
 let names = [
