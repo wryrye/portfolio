@@ -24,7 +24,7 @@ function showPDF(app, name) {
   
         app.view.style.display = "none";
   
-        var viewport = pdfPage.getViewport(1.0);
+        var viewport = pdfPage.getViewport(3.0);
   
         canvas.width = window.innerWidth;
         canvas.height = viewport.height;
