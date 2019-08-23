@@ -27,7 +27,7 @@ loader
   .add("speech", "assets/img/speech2.png")
   .load(setup);
 
-let python, knights, state, sheet, background, shrek, speech, title, currentQuestion, action;
+let python, knights, state, background, shrek, speech, title, currentQuestion, action;
 let firstColor, secondColor;
 
 let names = [
@@ -111,8 +111,9 @@ function setup() {
   speech.visible = false;
   app.stage.addChild(speech);
 
-  sheet = resources.python.spritesheet;
-  python = new PIXI.AnimatedSprite(sheet.animations["snake_idle"]);
+  let pythonSheet = resources.python.spritesheet;
+  python = new PIXI.AnimatedSprite(pythonSheet.animations["snake_idle"]);
+  python.sheet = pythonSheet;
   python.position.set(window.innerHeight * .69 - window.innerHeight, window.innerHeight * .8); // almost bottom-left corner of the canvas
   python.animationSpeed = 0.3;
   python.anchor.x = .5
@@ -129,7 +130,7 @@ function setup() {
 
   python.vx = 2;
   python.scale.x = 1
-  python.textures = sheet.animations["snake_run"];
+  python.textures = python.sheet.animations["snake_run"];
   python.width = window.innerHeight*1.3;
   python.height = window.innerHeight*1.3;
   python.play()
@@ -151,7 +152,7 @@ function setup() {
     python.vx = 1;
     python.vy = 0;
     python.scale.x = 1
-    python.textures = sheet.animations["snake_run"];
+    python.textures = python.sheet.animations["snake_run"];
     python.width = window.innerHeight*1.3;
     python.height = window.innerHeight*1.3;
     python.play()
@@ -162,7 +163,7 @@ function setup() {
   right.release = () => {
     if (!left.isDown && python.vy === 0) {
       python.vx = 0;
-      python.textures = sheet.animations["snake_idle"];
+      python.textures = python.sheet.animations["snake_idle"];
       python.width = window.innerHeight*1.3;
       python.height = window.innerHeight*1.3;
       python.play()
@@ -178,7 +179,7 @@ function setup() {
 
     python.width = window.innerHeight*1.3;
     python.height = window.innerHeight*1.3;
-    python.textures = sheet.animations["snake_run"];
+    python.textures = python.sheet.animations["snake_run"];
     python.play()
     knightsLeft();
     playKnights();
@@ -187,7 +188,7 @@ function setup() {
   left.release = () => {
     if (!right.isDown && python.vy === 0) {
       python.vx = 0;
-      python.textures = sheet.animations["snake_idle"];
+      python.textures = python.sheet.animations["snake_idle"];
       python.width = window.innerHeight*1.3;
       python.height = window.innerHeight*1.3;
       python.play()
@@ -230,7 +231,7 @@ function intro(delta) {
     moveKnights();
   } else {
     python.vx = 0;
-    python.textures = sheet.animations["snake_idle"];
+    python.textures = python.sheet.animations["snake_idle"];
     python.width = window.innerHeight*1.3;
     python.height = window.innerHeight*1.3;
     python.play()
@@ -279,7 +280,7 @@ function flee(delta) {
 
   python.width = window.innerHeight*1.3;
   python.height = window.innerHeight*1.3;
-  python.textures = sheet.animations["snake_run"];
+  python.textures = python.sheet.animations["snake_run"];
   python.play()
   knightsLeft();
   playKnights();
