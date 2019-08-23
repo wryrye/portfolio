@@ -6,7 +6,7 @@ export default class Question {
       this.text = text;
       this.answers = answers;
   
-      let textObj = new PIXI.Text(text, createFont(0x000000, window.innerHeight * .03, 'bold'));
+      let textObj = new PIXI.Text(text, createFont(0x000000, window.innerHeight * .03, 'bold', 0));
       textObj.position.set(window.innerWidth * .65, window.innerHeight * .12);
       textObj.visible = false;
       this.textObj = textObj;

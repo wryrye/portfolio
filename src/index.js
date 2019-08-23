@@ -36,31 +36,31 @@ let python, knights, state, sheet, background, shrek, speech, title, currentQues
 let firstColor, secondColor;
 
 let names = [
-  new Answer("Employer", () => console.log("Employer"), nextQuestion, 0x000000),
-  new Answer("Family", () => console.log("Family"), nextQuestion, 0x000000),
-  new Answer("Friend", () => console.log("Friend"), nextQuestion, 0x000000),
-  new Answer("Nemesis", () => console.log("Nemesis"), nextQuestion, 0x000000)
+  new Answer("Employer", () => console.log("Employer"), nextQuestion, 0x000000, 0),
+  new Answer("Family", () => console.log("Family"), nextQuestion, 0x000000, 0),
+  new Answer("Friend", () => console.log("Friend"), nextQuestion, 0x000000, 0),
+  new Answer("Nemesis", () => console.log("Nemesis"), nextQuestion, 0x000000, 0)
 ];
 
 let quests = [
-  new Answer("Explore My Résumé", () => action = showResume, nextQuestion, 0x000000),
-  new Answer("Venture to The Orient", () => action = showChinese, nextQuestion, 0x000000),
-  new Answer("Seek the Holy Grail", () => console.log("Family"), nextQuestion, 0x000000),
-  new Answer("Fight the Ogre", () => console.log("Foe"), nextQuestion, 0x000000)
+  new Answer("Explore My Résumé", () => action = showResume, nextQuestion, 0x000000, 0),
+  new Answer("Venture to The Orient", () => action = showChinese, nextQuestion, 0x000000, 0),
+  new Answer("Seek the Holy Grail", () => console.log("Family"), nextQuestion, 0x000000, 0),
+  new Answer("Fight the Ogre", () => console.log("Foe"), nextQuestion, 0x000000, 0)
 ];
 
 let colors = [
-  new Answer("Red", () => firstColor = "Red", nextQuestion, 0xFF0000),
-  new Answer("Yellow", () => firstColor = "Yellow", nextQuestion, 0xFFFF00),
-  new Answer("Green", () => firstColor = "Green", nextQuestion, 0x00FF00),
-  new Answer("Blue", () => firstColor = "Blue", nextQuestion, 0x0000FF),
+  new Answer("Red", () => firstColor = "Red", nextQuestion, 0xFF0000, 5),
+  new Answer("Yellow", () => firstColor = "Yellow", nextQuestion, 0xFFFF00, 5),
+  new Answer("Green", () => firstColor = "Green", nextQuestion, 0x00FF00, 5),
+  new Answer("Blue", () => firstColor = "Blue", nextQuestion, 0x0000FF, 5),
 ];
 
 let confirm = [
-  new Answer("Green", () => secondColor = "Green", compareColors, 0xFF0000),
-  new Answer("Blue", () => secondColor = "Blue", compareColors, 0xFFFF00),
-  new Answer("Red", () => secondColor = "Red", compareColors, 0x00FF00),
-  new Answer("Yellow", () => secondColor = "Yellow", compareColors , 0x0000FF),
+  new Answer("Green", () => secondColor = "Green", compareColors, 0xFF0000, 5),
+  new Answer("Blue", () => secondColor = "Blue", compareColors, 0xFFFF00, 5),
+  new Answer("Red", () => secondColor = "Red", compareColors, 0x00FF00, 5),
+  new Answer("Yellow", () => secondColor = "Yellow", compareColors , 0x0000FF, 5),
 ];
 
 let questions = [

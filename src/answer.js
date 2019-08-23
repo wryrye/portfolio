@@ -2,11 +2,11 @@ import * as PIXI from 'pixi.js';
 import createFont from './fonts.js'
 
 export default class Answer {
-    constructor(text, action, callback, color) {
+    constructor(text, action, callback, color, thickness) {
       this.text = text;
       this.action = action
   
-      let textObj = new PIXI.Text(text, createFont(color, window.innerHeight * .02, "normal"));
+      let textObj = new PIXI.Text(text, createFont(color, window.innerHeight * .02, "normal", thickness));
       textObj.visible = false;
       textObj.interactive = true;
       textObj.style.fill = color;
