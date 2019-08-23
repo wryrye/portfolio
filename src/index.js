@@ -47,26 +47,22 @@ function setUp() {
   app.stage.addChild(world);
 
   title = new PIXI.Sprite(resources.title.texture);
-  title.width = 0;
-  title.height = 0;
+  title.width = title.height = 0;
   title.position.set(window.innerWidth / 2, window.innerHeight / 2);
-  title.anchor.x = .5
-  title.anchor.y = .5
+  title.anchor.set(0.5);
   app.stage.addChild(title);
 
   let pythonSheet = resources.python.spritesheet;
   python = new PIXI.AnimatedSprite(pythonSheet.animations["snake_idle"]);
   python.sheet = pythonSheet;
-  python.position.set(window.innerHeight * .69 - window.innerHeight, window.innerHeight * .8); // almost bottom-left corner of the canvas
+  python.width = python.height = window.innerHeight*1.3;
+  python.position.set(window.innerHeight * .69 - window.innerHeight, window.innerHeight * .8);
+  python.anchor.set(0.5);
   python.animationSpeed = 0.3;
-  python.anchor.x = .5
-  python.anchor.y = .5
   python.scale.x = 1
   python.vx = 1
   python.vy = 0
   python.play();
-  python.width = window.innerHeight*1.3;
-  python.height = window.innerHeight*1.3;
   app.stage.addChild(python);
 
   posse = new Posse(app, python, "knight");

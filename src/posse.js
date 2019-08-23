@@ -21,8 +21,6 @@ export default class Posse {
         follower.animationSpeed = 0.25;
         follower.anchor.set(0.5);
         follower.scale.x = 1
-        follower.vx = 0
-        follower.vy = 0
         follower.width = window.innerHeight/2.2;
         follower.height = window.innerHeight/2.2;
         follower.gotoAndStop(1);
