@@ -69,7 +69,7 @@ function setUp() {
   python.height = window.innerHeight*1.3;
   app.stage.addChild(python);
 
-  posse = new Posse(app, python);
+  posse = new Posse(app, python, "knight");
 
   let ogreAR = .71;
   ogre = new PIXI.Sprite(resources.ogre.texture);
@@ -104,8 +104,7 @@ function setUp() {
     python.width = window.innerHeight*1.3;
     python.height = window.innerHeight*1.3;
     python.play()
-    posse.knightsRight();
-    posse.playKnights();
+    posse.faceRight();
   };
 
   keyboard.right.release = () => {
@@ -115,7 +114,7 @@ function setUp() {
       python.width = window.innerHeight*1.3;
       python.height = window.innerHeight*1.3;
       python.play()
-      posse.stopKnights();
+      posse.stop();
     }
   };
 
@@ -128,8 +127,7 @@ function setUp() {
     python.height = window.innerHeight*1.3;
     python.textures = python.sheet.animations["snake_run"];
     python.play()
-    posse.knightsLeft();
-    posse.playKnights();
+    posse.faceLeft();
   };
 
   keyboard.left.release = () => {
@@ -139,7 +137,7 @@ function setUp() {
       python.width = window.innerHeight*1.3;
       python.height = window.innerHeight*1.3;
       python.play()
-      posse.stopKnights();
+      posse.stop();
     }
   };
 
@@ -178,14 +176,14 @@ function intro(delta) {
 
   if (python.x < window.innerHeight * .69) {
     python.x += python.vx;
-    posse.moveKnights();
+    posse.move();
   } else {
     python.vx = 0;
     python.textures = python.sheet.animations["snake_idle"];
     python.width = window.innerHeight*1.3;
     python.height = window.innerHeight*1.3;
     python.play()
-    posse.stopKnights();
+    posse.stop();
 
     if (title.alpha <= 0) {
       state = play;
@@ -198,7 +196,7 @@ function play(delta) {
   //Use the python's velocity to make it move
   python.x += python.vx;
   python.y += python.vy
-  posse.moveKnights();
+  posse.move();
   world.x -= python.vx * 1.5;
   ogre.x -= python.vx * 1.5;
 
@@ -219,7 +217,7 @@ function play(delta) {
 function flee(delta) {
   python.x += python.vx;
   python.y += python.vy
-  posse.moveKnights();
+  posse.move();
   world.x -= python.vx * 1.5;
   // shrek.x -= python.vx * 1.5;
 
@@ -229,9 +227,7 @@ function flee(delta) {
   python.height = window.innerHeight*1.3;
   python.textures = python.sheet.animations["snake_run"];
   python.play()
-  posse.knightsLeft();
-  posse.playKnights();
-
+  posse.faceLeft();
 }
 
 // helper methods
