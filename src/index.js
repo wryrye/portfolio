@@ -4,6 +4,13 @@ import Question from './question.js'
 import Answer from './answer.js'
 import { showResume, showChinese } from './util.js';
 
+// pixi sprite variables
+let world, title, python, knights, ogre, speech;
+
+// other game variables
+let state, currentQuestion, action, firstColor, secondColor;
+
+// initialize pixi
 let app = new PIXI.Application({
   width: window.innerWidth,
   height: window.innerHeight,
@@ -18,77 +25,24 @@ let view = app.view,
 
 document.body.appendChild(view);
 
+// load image assets
 loader
-  .add("title", "assets/img/title.png")
   .add("world", "assets/img/world6.png")
+  .add("title", "assets/img/title.png")
   .add("python", "assets/img/snake.json")
   .add("knight", "assets/img/knight.json")
   .add("ogre", "assets/img/shrek3.png")
-  .add("madOgre", "assets/img/shrek_mad.png")
   .add("speech", "assets/img/speech2.png")
-  .load(setup);
+  .add("madOgre", "assets/img/shrek_mad.png")
+  .load(setUp);
 
-let python, knights, state, background, shrek, speech, title, currentQuestion, action;
-let firstColor, secondColor;
+function setUp() {
 
-let names = [
-  new Answer("Employer", () => console.log("Employer"), nextQuestion, 0x000000, 0),
-  new Answer("Family", () => console.log("Family"), nextQuestion, 0x000000, 0),
-  new Answer("Friend", () => console.log("Friend"), nextQuestion, 0x000000, 0),
-  new Answer("Nemesis", () => console.log("Nemesis"), nextQuestion, 0x000000, 0)
-];
-
-let quests = [
-  new Answer("Explore My Résumé", () => action = showResume, nextQuestion, 0x000000, 0),
-  new Answer("Venture to The Orient", () => action = showChinese, nextQuestion, 0x000000, 0),
-  new Answer("Seek the Holy Grail", () => console.log("Family"), nextQuestion, 0x000000, 0),
-  new Answer("Fight the Ogre", () => console.log("Foe"), nextQuestion, 0x000000, 0)
-];
-
-let colors = [
-  new Answer("Red", () => firstColor = "Red", nextQuestion, 0xFF0000, 5),
-  new Answer("Yellow", () => firstColor = "Yellow", nextQuestion, 0xFFFF00, 5),
-  new Answer("Green", () => firstColor = "Green", nextQuestion, 0x00FF00, 5),
-  new Answer("Blue", () => firstColor = "Blue", nextQuestion, 0x0000FF, 5),
-];
-
-let confirm = [
-  new Answer("Green", () => secondColor = "Green", compareColors, 0xFF0000, 5),
-  new Answer("Blue", () => secondColor = "Blue", compareColors, 0xFFFF00, 5),
-  new Answer("Red", () => secondColor = "Red", compareColors, 0x00FF00, 5),
-  new Answer("Yellow", () => secondColor = "Yellow", compareColors , 0x0000FF, 5),
-];
-
-let questions = [
-  new Question("What is your NAME?", names),
-  new Question("What is your QUEST?", quests),
-  new Question("What is your favorite COLOR?", colors), 
-  new Question("CONFIRM your favorite COLOR.", confirm),
-  new Question("GET OUT OF MY SWAMP!!!", confirm)
-]
-
-function compareColors() {
-  console.log(firstColor == secondColor);
-  firstColor == secondColor ? doAction() : resetGame();
-}
-
-function nextQuestion() {
-  if (currentQuestion) currentQuestion.remove();
-  currentQuestion = questions.shift();
-  currentQuestion.attach(app);
-}
-
-function doAction() {
-  action(app);
-}
-
-function setup() {
-
-  // load sprites
-  background = new PIXI.Sprite(resources.world.texture);
-  background.width = window.innerHeight * 4;
-  background.height = window.innerHeight;
-  app.stage.addChild(background);
+  // set up sprite objects
+  world = new PIXI.Sprite(resources.world.texture);
+  world.width = window.innerHeight * 4;
+  world.height = window.innerHeight;
+  app.stage.addChild(world);
 
   title = new PIXI.Sprite(resources.title.texture);
   title.width = 0;
@@ -97,20 +51,6 @@ function setup() {
   title.anchor.x = .5
   title.anchor.y = .5
   app.stage.addChild(title);
-
-  let shrekAR = .71;
-  shrek = new PIXI.Sprite(resources.ogre.texture);
-  shrek.width = window.innerHeight * .5 * shrekAR;
-  shrek.height = window.innerHeight * .5;
-  shrek.position.set(window.innerWidth * 1.4, window.innerHeight * .45);
-  app.stage.addChild(shrek);
-
-  speech = new PIXI.Sprite(resources.speech.texture);
-  speech.width = window.innerHeight * .75;
-  speech.height = window.innerHeight * .5;
-  speech.position.set(window.innerWidth * .6, window.innerHeight * .05);
-  speech.visible = false;
-  app.stage.addChild(speech);
 
   let pythonSheet = resources.python.spritesheet;
   python = new PIXI.AnimatedSprite(pythonSheet.animations["snake_idle"]);
@@ -127,16 +67,31 @@ function setup() {
   python.height = window.innerHeight*1.3;
   app.stage.addChild(python);
 
+  addKnights();
+  knightsRight();
+  playKnights();
+
+  let ogreAR = .71;
+  ogre = new PIXI.Sprite(resources.ogre.texture);
+  ogre.width = window.innerHeight * .5 * ogreAR;
+  ogre.height = window.innerHeight * .5;
+  ogre.position.set(window.innerWidth * 1.4, window.innerHeight * .45);
+  app.stage.addChild(ogre);
+
+  speech = new PIXI.Sprite(resources.speech.texture);
+  speech.width = window.innerHeight * .75;
+  speech.height = window.innerHeight * .5;
+  speech.position.set(window.innerWidth * .6, window.innerHeight * .05);
+  speech.visible = false;
+  app.stage.addChild(speech);
+
+  // python intro state
   python.vx = 2;
   python.scale.x = 1
   python.textures = python.sheet.animations["snake_run"];
   python.width = window.innerHeight*1.3;
   python.height = window.innerHeight*1.3;
   python.play()
-
-  addKnights();
-  knightsRight();
-  playKnights();
 
   // configure keyboard
   let keyboard = new Keyboard();
@@ -164,7 +119,6 @@ function setup() {
     }
   };
 
-  // Left
   keyboard.left.press = () => {
     python.vx = -1;
     python.vy = 0;
@@ -205,6 +159,8 @@ function gameLoop(delta) {
   state(delta);
 }
 
+//game states
+
 let wait = 0;
 
 function intro(delta) {
@@ -235,9 +191,6 @@ function intro(delta) {
       state = play;
     }
   }
-
-
-
 }
 
 function play(delta) {
@@ -246,15 +199,15 @@ function play(delta) {
   python.x += python.vx;
   python.y += python.vy
   moveKnights();
-  background.x -= python.vx * 1.5;
-  shrek.x -= python.vx * 1.5;
+  world.x -= python.vx * 1.5;
+  ogre.x -= python.vx * 1.5;
 
   // if (python.x < window.innerHeight * .66) {
   //   python.x = window.innerHeight * .66;
   // }
 
 
-  if (shrek.x - python.x < window.innerWidth * .1) {
+  if (ogre.x - python.x < window.innerWidth * .1) {
     speech.visible = true;
     currentQuestion.show();
   } else {
@@ -267,7 +220,7 @@ function flee(delta) {
   python.x += python.vx;
   python.y += python.vy
   moveKnights();
-  background.x -= python.vx * 1.5;
+  world.x -= python.vx * 1.5;
   // shrek.x -= python.vx * 1.5;
 
   python.scale.x = -1
@@ -281,9 +234,26 @@ function flee(delta) {
 
 }
 
+// helper methods
+
+function compareColors() {
+  console.log(firstColor == secondColor);
+  firstColor == secondColor ? doAction() : resetGame();
+}
+
+function nextQuestion() {
+  if (currentQuestion) currentQuestion.remove();
+  currentQuestion = questions.shift();
+  currentQuestion.attach(app);
+}
+
+function doAction() {
+  action(app);
+}
+
 function resetGame() {
   // nextQuestion();
-  shrek.texture = resources.madOgre.texture;
+  ogre.texture = resources.madOgre.texture;
   python.vx = -3
   state = flee;
 }
@@ -345,3 +315,40 @@ function knightsRight() {
     if (knight.scale.x < 1) knight.scale.x *= -1;
   });
 }
+
+// data
+let names = [
+  new Answer("Employer", () => console.log("Employer"), nextQuestion, 0x000000, 0),
+  new Answer("Family", () => console.log("Family"), nextQuestion, 0x000000, 0),
+  new Answer("Friend", () => console.log("Friend"), nextQuestion, 0x000000, 0),
+  new Answer("Nemesis", () => console.log("Nemesis"), nextQuestion, 0x000000, 0)
+];
+
+let quests = [
+  new Answer("Explore My Résumé", () => action = showResume, nextQuestion, 0x000000, 0),
+  new Answer("Venture to The Orient", () => action = showChinese, nextQuestion, 0x000000, 0),
+  new Answer("Seek the Holy Grail", () => console.log("Family"), nextQuestion, 0x000000, 0),
+  new Answer("Fight the Ogre", () => console.log("Foe"), nextQuestion, 0x000000, 0)
+];
+
+let colors = [
+  new Answer("Red", () => firstColor = "Red", nextQuestion, 0xFF0000, 5),
+  new Answer("Yellow", () => firstColor = "Yellow", nextQuestion, 0xFFFF00, 5),
+  new Answer("Green", () => firstColor = "Green", nextQuestion, 0x00FF00, 5),
+  new Answer("Blue", () => firstColor = "Blue", nextQuestion, 0x0000FF, 5),
+];
+
+let confirm = [
+  new Answer("Green", () => secondColor = "Green", compareColors, 0xFF0000, 5),
+  new Answer("Blue", () => secondColor = "Blue", compareColors, 0xFFFF00, 5),
+  new Answer("Red", () => secondColor = "Red", compareColors, 0x00FF00, 5),
+  new Answer("Yellow", () => secondColor = "Yellow", compareColors , 0x0000FF, 5),
+];
+
+let questions = [
+  new Question("What is your NAME?", names),
+  new Question("What is your QUEST?", quests),
+  new Question("What is your favorite COLOR?", colors), 
+  new Question("CONFIRM your favorite COLOR.", confirm),
+  new Question("GET OUT OF MY SWAMP!!!", confirm)
+]
