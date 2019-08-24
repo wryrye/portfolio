@@ -1,13 +1,17 @@
 import * as PIXI from 'pixi.js';
 import createFont from './fonts.js'
 
+function unit(x) {
+  return window.innerHeight * x/100
+}
+
 export default class Speech {
-    constructor(text, answers) {
+    constructor(text, answers, bubble) {
       this.text = text;
       this.answers = answers;
   
       let textObj = new PIXI.Text(text, createFont(0x000000, window.innerHeight * .03, 'bold', 0));
-      textObj.position.set(window.innerWidth * .65, window.innerHeight * .12);
+      textObj.position.set(bubble.x + unit(8), bubble.y + unit(7));
       textObj.visible = false;
       this.textObj = textObj;
   
@@ -19,8 +23,7 @@ export default class Speech {
           this.triangle.y = answer.textObj.y;
         });
   
-        answer.textObj.position.set(window.innerWidth * .65, window.innerHeight * .15 + (window.innerHeight * .05 + index * innerHeight * .04));
-        // app.stage.addChild(answer.textObj);
+        answer.textObj.position.set(bubble.x + unit(8), window.innerHeight * .15 + (window.innerHeight * .05 + index * innerHeight * .04));
       });
   
       let triangle = new PIXI.Graphics();

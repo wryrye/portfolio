@@ -22,6 +22,7 @@ let app = new PIXI.Application({
   resolution: 1
 });
 
+// aliases
 let view = app.view,
     loader = app.loader,
     resources = app.loader.resources,
@@ -29,7 +30,7 @@ let view = app.view,
 
 document.body.appendChild(view);
 
-// load image assets
+// load assets
 loader
   .add("world", "assets/img/world6.png")
   .add("title", "assets/img/title.png")
@@ -42,7 +43,7 @@ loader
 
 function setUp() {
 
-  // set up sprite objects
+  // set up sprites
   world = new PIXI.Sprite(resources.world.texture);
   world.width = window.innerHeight * 4;
   world.height = window.innerHeight;
@@ -58,19 +59,21 @@ function setUp() {
   ogre = new PIXI.Sprite(resources.ogre.texture);
   ogre.width = window.innerHeight * .5 * ogreAR;
   ogre.height = window.innerHeight * .5;
-  ogre.position.set(window.innerWidth * 1.38, window.innerHeight * .45);
+  ogre.position.set(window.innerHeight * 3, window.innerHeight * .45);
   stage.addChild(ogre);
 
   bubble = new PIXI.Sprite(resources.bubble.texture);
   bubble.width = window.innerHeight * .75;
   bubble.height = window.innerHeight * .5;
-  bubble.position.set(window.innerWidth * .6, window.innerHeight * .05);
+  bubble.position.set(window.innerWidth * .93 - bubble.width, window.innerHeight * .05);
   bubble.visible = false;
   stage.addChild(bubble);
 
   python = new Python(app, "python");
 
   posse = new Posse(app, python.sprite, "knight");
+
+  loadData();
 
   // initial config
   python.faceRight(2);
@@ -123,11 +126,13 @@ function play(delta) {
   if (inBounds()) {
     python.move();
     posse.move();
-    world.x -= python.sprite.vx * 1.5;
-    ogre.x -= python.sprite.vx * 1.5;
+
+    let speed = python.sprite.vx === 0 ? 0: python.sprite.vx > 0 ? 1.5 : -1.5;
+    world.x -= speed
+    ogre.x -= speed
   }
 
-  if ((ogre.x - python.sprite.x) < (window.innerWidth * .11)) {
+  if ((ogre.x - python.sprite.x) < (window.innerHeight * .3)) {
     bubble.visible = true;
     currentSpeech.show();
   } else {
@@ -155,7 +160,7 @@ function flee(delta) {
 
 function inBounds() {
   let newX = python.sprite.x + python.sprite.vx
-  return newX >= python.startX && newX < (ogre.x - (window.innerWidth * .11) + 1);
+  return newX >= python.startX && newX < (ogre.x - (window.innerHeight * .3) + 1);
 }
 
 function nextSpeech() {
@@ -173,7 +178,7 @@ function doAction() {
 }
 
 function engageWar() {
-  speeches.push(new Speech("Of you go, then!", null));
+  speeches.push(new Speech("Of you go, then!", null, bubble));
   nextSpeech();
   currentSpeech.show();
 
@@ -192,7 +197,7 @@ function engageWar() {
 }
 
 function seekGrail() {
-  speeches.push(new Speech("Of you go, then!", null));
+  speeches.push(new Speech("Of you go, then!", null, bubble));
   nextSpeech();
   currentSpeech.show();
 
@@ -211,8 +216,8 @@ function seekGrail() {
 }
 
 function resetGame() {
-  speeches.push(new Speech("LIAR!", null));
-  speeches.push(new Speech("GET OUT OF MY SWAMP!", null));
+  speeches.push(new Speech("LIAR!", null, bubble));
+  speeches.push(new Speech("GET OUT OF MY SWAMP!", null, bubble));
   nextSpeech();
   currentSpeech.show();
 
@@ -231,7 +236,8 @@ function initKeyboard(){
 
     Object.assign(keyboard.right, {
       press:() => {
-        python.faceRight(1);
+        let ratio = window.innerWidth/window.innerHeight;
+        python.faceRight(ratio * 0.821341 - 1.183005);
         posse.faceRight();
       },
       release:() => {
@@ -244,7 +250,8 @@ function initKeyboard(){
 
     Object.assign(keyboard.left, {
       press:() => {
-        python.faceLeft(1);
+        let ratio = window.innerWidth/window.innerHeight;
+        python.faceLeft(ratio * 0.821341 - 1.183005);
         posse.faceLeft();
       },
       release:() => {
@@ -255,39 +262,41 @@ function initKeyboard(){
       }
     });
 }
+let names, quests, colors, confirm, speeches;
 
-// data
-let names = [
-  new Response("Employer", () => console.log("Employer"), nextSpeech, 0x000000, 0),
-  new Response("Family", () => console.log("Family"), nextSpeech, 0x000000, 0),
-  new Response("Friend", () => console.log("Friend"), nextSpeech, 0x000000, 0),
-  new Response("Nemesis", () => console.log("Nemesis"), nextSpeech, 0x000000, 0)
-];
-
-let quests = [
-  new Response("Explore My Résumé", () => action = showResume, nextSpeech, 0x000000, 0),
-  new Response("Venture to the Orient", () => action = showChinese, nextSpeech, 0x000000, 0),
-  new Response("Engage in Warfare", () => action = engageWar, nextSpeech, 0x000000, 0),
-  new Response("Seek the Holy Grail", () => action = seekGrail, nextSpeech, 0x000000, 0)
-];
-
-let colors = [
-  new Response("Red", () => firstColor = "Red", nextSpeech, 0xFF0000, 5),
-  new Response("Yellow", () => firstColor = "Yellow", nextSpeech, 0xFFFF00, 5),
-  new Response("Green", () => firstColor = "Green", nextSpeech, 0x00FF00, 5),
-  new Response("Blue", () => firstColor = "Blue", nextSpeech, 0x0000FF, 5),
-];
-
-let confirm = [
-  new Response("Green", () => secondColor = "Green", compareColors, 0xFF0000, 5),
-  new Response("Blue", () => secondColor = "Blue", compareColors, 0xFFFF00, 5),
-  new Response("Red", () => secondColor = "Red", compareColors, 0x00FF00, 5),
-  new Response("Yellow", () => secondColor = "Yellow", compareColors , 0x0000FF, 5),
-];
-
-let speeches = [
-  new Speech("What is your name?", names),
-  new Speech("What is your quest?", quests),
-  new Speech("What is your favorite color?", colors), 
-  new Speech("Confirm your favorite color.", confirm)
-]
+function loadData() {
+  names = [
+    new Response("Employer", () => console.log("Employer"), nextSpeech, 0x000000, 0),
+    new Response("Family", () => console.log("Family"), nextSpeech, 0x000000, 0),
+    new Response("Friend", () => console.log("Friend"), nextSpeech, 0x000000, 0),
+    new Response("Nemesis", () => console.log("Nemesis"), nextSpeech, 0x000000, 0)
+  ];
+  
+  quests = [
+    new Response("Explore My Résumé", () => action = showResume, nextSpeech, 0x000000, 0),
+    new Response("Venture to the Orient", () => action = showChinese, nextSpeech, 0x000000, 0),
+    new Response("Engage in Warfare", () => action = engageWar, nextSpeech, 0x000000, 0),
+    new Response("Seek the Holy Grail", () => action = seekGrail, nextSpeech, 0x000000, 0)
+  ];
+  
+  colors = [
+    new Response("Red", () => firstColor = "Red", nextSpeech, 0xFF0000, 5),
+    new Response("Yellow", () => firstColor = "Yellow", nextSpeech, 0xFFFF00, 5),
+    new Response("Green", () => firstColor = "Green", nextSpeech, 0x00FF00, 5),
+    new Response("Blue", () => firstColor = "Blue", nextSpeech, 0x0000FF, 5),
+  ];
+  
+  confirm = [
+    new Response("Green", () => secondColor = "Green", compareColors, 0xFF0000, 5),
+    new Response("Blue", () => secondColor = "Blue", compareColors, 0xFFFF00, 5),
+    new Response("Red", () => secondColor = "Red", compareColors, 0x00FF00, 5),
+    new Response("Yellow", () => secondColor = "Yellow", compareColors , 0x0000FF, 5),
+  ];
+  
+  speeches = [
+    new Speech("What is your name?", names, bubble),
+    new Speech("What is your quest?", quests, bubble),
+    new Speech("What is your favorite color?", colors, bubble), 
+    new Speech("Confirm your favorite color.", confirm, bubble)
+  ]
+}
