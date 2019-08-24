@@ -5,7 +5,7 @@ import Response from './response.js'
 import Python from './python.js'
 import Posse from './posse.js'
 
-import { showResume, showChinese } from './util.js';
+import { distance, showResume, showChinese } from './util.js';
 
 // pixi sprite variables
 let world, title, python, posse, ogre, bubble;
@@ -15,8 +15,8 @@ let state, currentSpeech, action, firstColor, secondColor;
 
 // init pixi
 let app = new PIXI.Application({
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: innerWidth,
+  height: innerHeight,
   antialias: true,
   transparent: false,
   resolution: 1
@@ -45,27 +45,27 @@ function setUp() {
 
   // set up sprites
   world = new PIXI.Sprite(resources.world.texture);
-  world.width = window.innerHeight * 4;
-  world.height = window.innerHeight;
+  world.width = innerHeight * 4;
+  world.height = innerHeight;
   stage.addChild(world);
 
   title = new PIXI.Sprite(resources.title.texture);
   title.width = title.height = 0;
-  title.position.set(window.innerWidth / 2, window.innerHeight / 2);
+  title.position.set(innerWidth * .5, distance(50));
   title.anchor.set(0.5);
   stage.addChild(title);
 
   let ogreAR = .71;
   ogre = new PIXI.Sprite(resources.ogre.texture);
-  ogre.width = window.innerHeight * .5 * ogreAR;
-  ogre.height = window.innerHeight * .5;
-  ogre.position.set(window.innerHeight * 3, window.innerHeight * .45);
+  ogre.width = distance(50) * ogreAR;
+  ogre.height = distance(50);
+  ogre.position.set(innerHeight * 3, distance(45));
   stage.addChild(ogre);
 
   bubble = new PIXI.Sprite(resources.bubble.texture);
-  bubble.width = window.innerHeight * .75;
-  bubble.height = window.innerHeight * .5;
-  bubble.position.set(window.innerWidth * .93 - bubble.width, window.innerHeight * .05);
+  bubble.width = distance(75);
+  bubble.height = distance(50);
+  bubble.position.set(innerWidth * .93 - bubble.width, distance(5));
   bubble.visible = false;
   stage.addChild(bubble);
 
@@ -96,7 +96,7 @@ function intro(delta) {
   const ratio = 16 / 9;
 
   // expand title
-  if (title.height < window.innerHeight) {
+  if (title.height < innerHeight) {
     title.width += 6 * ratio;
     title.height += 6;
   } else {
@@ -107,7 +107,7 @@ function intro(delta) {
     }
   }
 
-  if (python.sprite.x < (window.innerHeight * .69)) {
+  if (python.sprite.x < distance(69)) {
     python.move();
     posse.move();
   } else {
@@ -132,7 +132,7 @@ function play(delta) {
     ogre.x -= speed
   }
 
-  if ((ogre.x - python.sprite.x) < (window.innerHeight * .3)) {
+  if ((ogre.x - python.sprite.x) < (distance(30))) {
     bubble.visible = true;
     currentSpeech.show();
   } else {
@@ -160,7 +160,7 @@ function flee(delta) {
 
 function inBounds() {
   let newX = python.sprite.x + python.sprite.vx
-  return newX >= python.startX && newX < (ogre.x - (window.innerHeight * .3) + 1);
+  return newX >= python.startX && newX < (ogre.x - (distance(30)) + 1);
 }
 
 function nextSpeech() {
@@ -233,11 +233,11 @@ function resetGame() {
 
 function initKeyboard(){
     let keyboard = new Keyboard();
+    let aspectRatio = innerWidth/innerHeight;
 
     Object.assign(keyboard.right, {
       press:() => {
-        let ratio = window.innerWidth/window.innerHeight;
-        python.faceRight(ratio * 0.821341 - 1.183005);
+        python.faceRight(aspectRatio * 0.821341 - 1.183005);
         posse.faceRight();
       },
       release:() => {
@@ -250,8 +250,7 @@ function initKeyboard(){
 
     Object.assign(keyboard.left, {
       press:() => {
-        let ratio = window.innerWidth/window.innerHeight;
-        python.faceLeft(ratio * 0.821341 - 1.183005);
+        python.faceLeft(aspectRatio * 0.821341 - 1.183005);
         posse.faceLeft();
       },
       release:() => {
