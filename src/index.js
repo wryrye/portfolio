@@ -54,10 +54,6 @@ function setUp() {
   title.anchor.set(0.5);
   stage.addChild(title);
 
-  python = new Python(app, "python");
-
-  posse = new Posse(app, python.sprite, "knight");
-
   let ogreAR = .71;
   ogre = new PIXI.Sprite(resources.ogre.texture);
   ogre.width = window.innerHeight * .5 * ogreAR;
@@ -72,6 +68,9 @@ function setUp() {
   speech.visible = false;
   stage.addChild(speech);
 
+  python = new Python(app, "python");
+
+  posse = new Posse(app, python.sprite, "knight");
 
   // initial config
   python.faceRight(2);
@@ -137,6 +136,12 @@ function play(delta) {
   }
 }
 
+function proceed(delta) {
+  python.move();
+  posse.move();
+}
+
+
 function flee(delta) {
   currentQuestion.show();
   python.move();
@@ -167,12 +172,53 @@ function doAction() {
   action(app);
 }
 
+function warfare() {
+  questions.push(new Question("Of you go, then!", null));
+  nextQuestion();
+  currentQuestion.show();
+
+  setTimeout(() => {
+    currentQuestion.remove();
+    speech.visible = false;
+    python.faceRight(3);
+    posse.faceRight();
+    ogre.vx = 0;
+  
+    state = proceed;
+    setTimeout(() => {
+      window.location = 'https://translation-warfare.herokuapp.com';
+    }, 2222);
+  }, 1234);
+}
+
+function seekGrail() {
+  questions.push(new Question("Of you go, then!", null));
+  nextQuestion();
+  currentQuestion.show();
+
+  setTimeout(() => {
+    currentQuestion.remove();
+    speech.visible = false;
+    python.faceRight(3);
+    posse.faceRight();
+    ogre.vx = 0;
+  
+    state = proceed;
+    setTimeout(() => {
+      window.location = 'https://rubyonrails.org';
+    }, 2222);
+  }, 1234);
+}
+
 function resetGame() {
+  questions.push(new Question("LIAR!", null));
+  questions.push(new Question("GET OUT OF MY SWAMP!", null));
   nextQuestion();
   currentQuestion.show();
 
   setTimeout(() => {
     nextQuestion();
+    currentQuestion.show();
     ogre.texture = resources.madOgre.texture;
     python.faceLeft(3);
     posse.faceLeft();
@@ -220,9 +266,9 @@ let names = [
 
 let quests = [
   new Answer("Explore My Résumé", () => action = showResume, nextQuestion, 0x000000, 0),
-  new Answer("Venture to The Orient", () => action = showChinese, nextQuestion, 0x000000, 0),
-  new Answer("Seek the Holy Grail", () => console.log("Family"), nextQuestion, 0x000000, 0),
-  new Answer("Fight the Ogre", () => console.log("Foe"), nextQuestion, 0x000000, 0)
+  new Answer("Venture to the Orient", () => action = showChinese, nextQuestion, 0x000000, 0),
+  new Answer("Engage in Warfare", () => action = warfare, nextQuestion, 0x000000, 0),
+  new Answer("Seek the Holy Grail", () => action = seekGrail, nextQuestion, 0x000000, 0)
 ];
 
 let colors = [
@@ -240,10 +286,8 @@ let confirm = [
 ];
 
 let questions = [
-  new Question("What is your NAME?", names),
-  new Question("What is your QUEST?", quests),
-  new Question("What is your favorite COLOR?", colors), 
-  new Question("CONFIRM your favorite COLOR.", confirm),
-  new Question("LIAR!", null),
-  new Question("GET OUT OF MY SWAMP!", null)
+  new Question("What is your name?", names),
+  new Question("What is your quest?", quests),
+  new Question("What is your favorite color?", colors), 
+  new Question("Confirm your favorite color.", confirm)
 ]
