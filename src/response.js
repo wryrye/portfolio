@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import createFont from './fonts.js'
 
-export default class Answer {
+export default class Response {
     constructor(text, action, callback, color, thickness) {
       this.text = text;
       this.action = action

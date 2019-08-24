@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import createFont from './fonts.js'
 
-export default class Question {
+export default class Speech {
     constructor(text, answers) {
       this.text = text;
       this.answers = answers;

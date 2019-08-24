@@ -1,17 +1,17 @@
 import * as PIXI from 'pixi.js';
 import Keyboard from './keyboard.js'
-import Question from './question.js'
-import Answer from './answer.js'
+import Speech from './speech.js'
+import Response from './response.js'
 import Python from './python.js'
 import Posse from './posse.js'
 
 import { showResume, showChinese } from './util.js';
 
 // pixi sprite variables
-let world, title, python, posse, ogre, speech;
+let world, title, python, posse, ogre, bubble;
 
 // other game variables
-let state, currentQuestion, action, firstColor, secondColor;
+let state, currentSpeech, action, firstColor, secondColor;
 
 // init pixi
 let app = new PIXI.Application({
@@ -36,7 +36,7 @@ loader
   .add("python", "assets/img/snake.json")
   .add("knight", "assets/img/knight.json")
   .add("ogre", "assets/img/shrek3.png")
-  .add("speech", "assets/img/speech2.png")
+  .add("bubble", "assets/img/speech2.png")
   .add("madOgre", "assets/img/shrek_mad.png")
   .load(setUp);
 
@@ -61,12 +61,12 @@ function setUp() {
   ogre.position.set(window.innerWidth * 1.38, window.innerHeight * .45);
   stage.addChild(ogre);
 
-  speech = new PIXI.Sprite(resources.speech.texture);
-  speech.width = window.innerHeight * .75;
-  speech.height = window.innerHeight * .5;
-  speech.position.set(window.innerWidth * .6, window.innerHeight * .05);
-  speech.visible = false;
-  stage.addChild(speech);
+  bubble = new PIXI.Sprite(resources.bubble.texture);
+  bubble.width = window.innerHeight * .75;
+  bubble.height = window.innerHeight * .5;
+  bubble.position.set(window.innerWidth * .6, window.innerHeight * .05);
+  bubble.visible = false;
+  stage.addChild(bubble);
 
   python = new Python(app, "python");
 
@@ -74,7 +74,7 @@ function setUp() {
 
   // initial config
   python.faceRight(2);
-  nextQuestion();
+  nextSpeech();
   state = intro;
 
   // start the game loop 
@@ -128,11 +128,11 @@ function play(delta) {
   }
 
   if ((ogre.x - python.sprite.x) < (window.innerWidth * .11)) {
-    speech.visible = true;
-    currentQuestion.show();
+    bubble.visible = true;
+    currentSpeech.show();
   } else {
-    speech.visible = false;
-    currentQuestion.hide();
+    bubble.visible = false;
+    currentSpeech.hide();
   }
 }
 
@@ -143,12 +143,12 @@ function proceed(delta) {
 
 
 function flee(delta) {
-  currentQuestion.show();
+  currentSpeech.show();
   python.move();
   posse.move();
   ogre.x += python.sprite.vx;
-  speech.x += python.sprite.vx;
-  currentQuestion.move(python.sprite.vx);
+  bubble.x += python.sprite.vx;
+  currentSpeech.move(python.sprite.vx);
 }
 
 /** helper methods **/
@@ -158,10 +158,10 @@ function inBounds() {
   return newX >= python.startX && newX < (ogre.x - (window.innerWidth * .11) + 1);
 }
 
-function nextQuestion() {
-  if (currentQuestion) currentQuestion.remove();
-  currentQuestion = questions.shift();
-  currentQuestion.attach(app);
+function nextSpeech() {
+  if (currentSpeech) currentSpeech.remove();
+  currentSpeech = speeches.shift();
+  currentSpeech.attach(app);
 }
 
 function compareColors() {
@@ -172,14 +172,14 @@ function doAction() {
   action(app);
 }
 
-function warfare() {
-  questions.push(new Question("Of you go, then!", null));
-  nextQuestion();
-  currentQuestion.show();
+function engageWar() {
+  speeches.push(new Speech("Of you go, then!", null));
+  nextSpeech();
+  currentSpeech.show();
 
   setTimeout(() => {
-    currentQuestion.remove();
-    speech.visible = false;
+    currentSpeech.remove();
+    bubble.visible = false;
     python.faceRight(3);
     posse.faceRight();
     ogre.vx = 0;
@@ -192,13 +192,13 @@ function warfare() {
 }
 
 function seekGrail() {
-  questions.push(new Question("Of you go, then!", null));
-  nextQuestion();
-  currentQuestion.show();
+  speeches.push(new Speech("Of you go, then!", null));
+  nextSpeech();
+  currentSpeech.show();
 
   setTimeout(() => {
-    currentQuestion.remove();
-    speech.visible = false;
+    currentSpeech.remove();
+    bubble.visible = false;
     python.faceRight(3);
     posse.faceRight();
     ogre.vx = 0;
@@ -211,14 +211,14 @@ function seekGrail() {
 }
 
 function resetGame() {
-  questions.push(new Question("LIAR!", null));
-  questions.push(new Question("GET OUT OF MY SWAMP!", null));
-  nextQuestion();
-  currentQuestion.show();
+  speeches.push(new Speech("LIAR!", null));
+  speeches.push(new Speech("GET OUT OF MY SWAMP!", null));
+  nextSpeech();
+  currentSpeech.show();
 
   setTimeout(() => {
-    nextQuestion();
-    currentQuestion.show();
+    nextSpeech();
+    currentSpeech.show();
     ogre.texture = resources.madOgre.texture;
     python.faceLeft(3);
     posse.faceLeft();
@@ -258,36 +258,36 @@ function initKeyboard(){
 
 // data
 let names = [
-  new Answer("Employer", () => console.log("Employer"), nextQuestion, 0x000000, 0),
-  new Answer("Family", () => console.log("Family"), nextQuestion, 0x000000, 0),
-  new Answer("Friend", () => console.log("Friend"), nextQuestion, 0x000000, 0),
-  new Answer("Nemesis", () => console.log("Nemesis"), nextQuestion, 0x000000, 0)
+  new Response("Employer", () => console.log("Employer"), nextSpeech, 0x000000, 0),
+  new Response("Family", () => console.log("Family"), nextSpeech, 0x000000, 0),
+  new Response("Friend", () => console.log("Friend"), nextSpeech, 0x000000, 0),
+  new Response("Nemesis", () => console.log("Nemesis"), nextSpeech, 0x000000, 0)
 ];
 
 let quests = [
-  new Answer("Explore My Résumé", () => action = showResume, nextQuestion, 0x000000, 0),
-  new Answer("Venture to the Orient", () => action = showChinese, nextQuestion, 0x000000, 0),
-  new Answer("Engage in Warfare", () => action = warfare, nextQuestion, 0x000000, 0),
-  new Answer("Seek the Holy Grail", () => action = seekGrail, nextQuestion, 0x000000, 0)
+  new Response("Explore My Résumé", () => action = showResume, nextSpeech, 0x000000, 0),
+  new Response("Venture to the Orient", () => action = showChinese, nextSpeech, 0x000000, 0),
+  new Response("Engage in Warfare", () => action = engageWar, nextSpeech, 0x000000, 0),
+  new Response("Seek the Holy Grail", () => action = seekGrail, nextSpeech, 0x000000, 0)
 ];
 
 let colors = [
-  new Answer("Red", () => firstColor = "Red", nextQuestion, 0xFF0000, 5),
-  new Answer("Yellow", () => firstColor = "Yellow", nextQuestion, 0xFFFF00, 5),
-  new Answer("Green", () => firstColor = "Green", nextQuestion, 0x00FF00, 5),
-  new Answer("Blue", () => firstColor = "Blue", nextQuestion, 0x0000FF, 5),
+  new Response("Red", () => firstColor = "Red", nextSpeech, 0xFF0000, 5),
+  new Response("Yellow", () => firstColor = "Yellow", nextSpeech, 0xFFFF00, 5),
+  new Response("Green", () => firstColor = "Green", nextSpeech, 0x00FF00, 5),
+  new Response("Blue", () => firstColor = "Blue", nextSpeech, 0x0000FF, 5),
 ];
 
 let confirm = [
-  new Answer("Green", () => secondColor = "Green", compareColors, 0xFF0000, 5),
-  new Answer("Blue", () => secondColor = "Blue", compareColors, 0xFFFF00, 5),
-  new Answer("Red", () => secondColor = "Red", compareColors, 0x00FF00, 5),
-  new Answer("Yellow", () => secondColor = "Yellow", compareColors , 0x0000FF, 5),
+  new Response("Green", () => secondColor = "Green", compareColors, 0xFF0000, 5),
+  new Response("Blue", () => secondColor = "Blue", compareColors, 0xFFFF00, 5),
+  new Response("Red", () => secondColor = "Red", compareColors, 0x00FF00, 5),
+  new Response("Yellow", () => secondColor = "Yellow", compareColors , 0x0000FF, 5),
 ];
 
-let questions = [
-  new Question("What is your name?", names),
-  new Question("What is your quest?", quests),
-  new Question("What is your favorite color?", colors), 
-  new Question("Confirm your favorite color.", confirm)
+let speeches = [
+  new Speech("What is your name?", names),
+  new Speech("What is your quest?", quests),
+  new Speech("What is your favorite color?", colors), 
+  new Speech("Confirm your favorite color.", confirm)
 ]
