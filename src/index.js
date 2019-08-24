@@ -11,7 +11,7 @@ import { distance, showResume, showChinese } from './util.js';
 let world, title, python, posse, ogre, bubble;
 
 // other game variables
-let state, currentSpeech, action, firstColor, secondColor;
+let aspectRatio, state, currentSpeech, action, firstColor, secondColor;
 
 // init pixi
 let app = new PIXI.Application({
@@ -42,6 +42,9 @@ loader
   .load(setUp);
 
 function setUp() {
+  // unsupported ratios
+  aspectRatio = innerWidth/innerHeight;
+  if (aspectRatio < 1.5 || aspectRatio > 2.15) return;
 
   // set up sprites
   world = new PIXI.Sprite(resources.world.texture);
@@ -233,7 +236,6 @@ function resetGame() {
 
 function initKeyboard(){
     let keyboard = new Keyboard();
-    let aspectRatio = innerWidth/innerHeight;
 
     Object.assign(keyboard.right, {
       press:() => {
