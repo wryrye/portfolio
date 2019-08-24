@@ -6,6 +6,7 @@ import Python from './python.js'
 import Posse from './posse.js'
 
 import { distance, showResume, showChinese } from './util.js';
+import './styles/stylesheet.css'; 
 
 // pixi sprite variables
 let world, title, python, posse, ogre, bubble;

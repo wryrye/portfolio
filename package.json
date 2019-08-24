@@ -22,8 +22,10 @@
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.0.4",
+    "css-loader": "^3.2.0",
     "html-webpack-plugin": "^3.2.0",
     "pdfjs-dist": "^2.1.266",
+    "style-loader": "^1.0.0",
     "webpack": "^4.39.1",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.8.0"

@@ -12,7 +12,7 @@ module.exports = {
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'Ryan Coughlin',
-      template: 'src/index.html'
+      template: 'index.html'
     }),
     new CopyPlugin([
       { from: 'src/assets', to: 'assets' },
@@ -21,5 +21,13 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].bundle.js',
-  }
+  },
+  module:{
+    rules:[
+        {
+            test:/\.css$/,
+            use:['style-loader','css-loader']
+        }
+    ]
+  },
 };
