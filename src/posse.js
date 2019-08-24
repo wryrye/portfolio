@@ -45,7 +45,6 @@ export default class Posse {
     move() {
       this.followers.forEach((follower, index) => {
         follower.x += this.leader.vx;
-        follower.y += this.leader.vy
       });
     }
     

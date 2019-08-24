@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import Keyboard from './keyboard.js'
 import Question from './question.js'
 import Answer from './answer.js'
+import Python from './python.js'
 import Posse from './posse.js'
 
 import { showResume, showChinese } from './util.js';
@@ -12,7 +13,7 @@ let world, title, python, posse, ogre, speech;
 // other game variables
 let state, currentQuestion, action, firstColor, secondColor;
 
-// initialize pixi
+// init pixi
 let app = new PIXI.Application({
   width: window.innerWidth,
   height: window.innerHeight,
@@ -53,26 +54,15 @@ function setUp() {
   title.anchor.set(0.5);
   stage.addChild(title);
 
-  let pythonSheet = resources.python.spritesheet;
-  python = new PIXI.AnimatedSprite(pythonSheet.animations["snake_idle"]);
-  python.sheet = pythonSheet;
-  python.width = python.height = window.innerHeight*1.3;
-  python.position.set(window.innerHeight * .69 - window.innerHeight, window.innerHeight * .8);
-  python.anchor.set(0.5);
-  python.animationSpeed = 0.3;
-  python.scale.x = 1
-  python.vx = 1
-  python.vy = 0
-  python.play();
-  stage.addChild(python);
+  python = new Python(app, "python");
 
-  posse = new Posse(app, python, "knight");
+  posse = new Posse(app, python.sprite, "knight");
 
   let ogreAR = .71;
   ogre = new PIXI.Sprite(resources.ogre.texture);
   ogre.width = window.innerHeight * .5 * ogreAR;
   ogre.height = window.innerHeight * .5;
-  ogre.position.set(window.innerWidth * 1.4, window.innerHeight * .45);
+  ogre.position.set(window.innerWidth * 1.38, window.innerHeight * .45);
   stage.addChild(ogre);
 
   speech = new PIXI.Sprite(resources.speech.texture);
@@ -82,67 +72,10 @@ function setUp() {
   speech.visible = false;
   stage.addChild(speech);
 
-  // python intro state
-  python.vx = 2;
-  python.scale.x = 1
-  python.textures = python.sheet.animations["snake_run"];
-  python.width = window.innerHeight*1.3;
-  python.height = window.innerHeight*1.3;
-  python.play()
 
-  // configure keyboard
-  let keyboard = new Keyboard();
-
-  keyboard.right.press = () => {
-    python.vx = 1;
-    python.vy = 0;
-    python.scale.x = 1
-    python.textures = python.sheet.animations["snake_run"];
-    python.width = window.innerHeight*1.3;
-    python.height = window.innerHeight*1.3;
-    python.play()
-    posse.faceRight();
-  };
-
-  keyboard.right.release = () => {
-    if (!keyboard.left.isDown && python.vy === 0) {
-      python.vx = 0;
-      python.textures = python.sheet.animations["snake_idle"];
-      python.width = window.innerHeight*1.3;
-      python.height = window.innerHeight*1.3;
-      python.play()
-      posse.stop();
-    }
-  };
-
-  keyboard.left.press = () => {
-    python.vx = -1;
-    python.vy = 0;
-    python.scale.x = -1
-
-    python.width = window.innerHeight*1.3;
-    python.height = window.innerHeight*1.3;
-    python.textures = python.sheet.animations["snake_run"];
-    python.play()
-    posse.faceLeft();
-  };
-
-  keyboard.left.release = () => {
-    if (!keyboard.right.isDown && python.vy === 0) {
-      python.vx = 0;
-      python.textures = python.sheet.animations["snake_idle"];
-      python.width = window.innerHeight*1.3;
-      python.height = window.innerHeight*1.3;
-      python.play()
-      posse.stop();
-    }
-  };
-
-
-  // load first question
+  // initial config
+  python.faceRight(2);
   nextQuestion();
-
-  // set the game state
   state = intro;
 
   // start the game loop 
@@ -150,59 +83,49 @@ function setUp() {
 }
 
 function gameLoop(delta) {
-  // update the current game state:
   state(delta);
 }
 
-//game states
+/** game states **/
 
 let wait = 0;
 
 function intro(delta) {
   const ratio = 16 / 9;
 
+  // expand title
   if (title.height < window.innerHeight) {
     title.width += 6 * ratio;
     title.height += 6;
   } else {
-    wait++;
-    if (wait > 200) {
+    // wait awhile
+    if (wait++ > 200) {
+      // fade out
       title.alpha -= .01;
     }
   }
 
-  if (python.x < window.innerHeight * .69) {
-    python.x += python.vx;
+  if (python.sprite.x < (window.innerHeight * .69)) {
+    python.move();
     posse.move();
   } else {
-    python.vx = 0;
-    python.textures = python.sheet.animations["snake_idle"];
-    python.width = window.innerHeight*1.3;
-    python.height = window.innerHeight*1.3;
-    python.play()
+    python.stop();
     posse.stop();
 
     if (title.alpha <= 0) {
       state = play;
+      initKeyboard();
     }
   }
 }
 
 function play(delta) {
-
-  //Use the python's velocity to make it move
-  python.x += python.vx;
-  python.y += python.vy
+  python.move();
   posse.move();
-  world.x -= python.vx * 1.5;
-  ogre.x -= python.vx * 1.5;
+  world.x -= python.sprite.vx * 1.5;
+  ogre.x -= python.sprite.vx * 1.5;
 
-  // if (python.x < window.innerHeight * .66) {
-  //   python.x = window.innerHeight * .66;
-  // }
-
-
-  if (ogre.x - python.x < window.innerWidth * .1) {
+  if ((ogre.x - python.sprite.x) < (window.innerWidth * .1)) {
     speech.visible = true;
     currentQuestion.show();
   } else {
@@ -212,27 +135,12 @@ function play(delta) {
 }
 
 function flee(delta) {
-  python.x += python.vx;
-  python.y += python.vy
+  python.move();
   posse.move();
-  world.x -= python.vx * 1.5;
-  // shrek.x -= python.vx * 1.5;
-
-  python.scale.x = -1
-
-  python.width = window.innerHeight*1.3;
-  python.height = window.innerHeight*1.3;
-  python.textures = python.sheet.animations["snake_run"];
-  python.play()
-  posse.faceLeft();
+  world.x -= python.sprite.vx * 1.5;
 }
 
-// helper methods
-
-function compareColors() {
-  console.log(firstColor == secondColor);
-  firstColor == secondColor ? doAction() : resetGame();
-}
+/** helper methods **/
 
 function nextQuestion() {
   if (currentQuestion) currentQuestion.remove();
@@ -240,18 +148,51 @@ function nextQuestion() {
   currentQuestion.attach(app);
 }
 
+function compareColors() {
+  console.log(firstColor == secondColor);
+  firstColor == secondColor ? doAction() : resetGame();
+}
+
 function doAction() {
   action(app);
 }
 
 function resetGame() {
-  // nextQuestion();
   ogre.texture = resources.madOgre.texture;
-  python.vx = -3
+  python.faceLeft(3);
+  posse.faceLeft();
   state = flee;
 }
 
+function initKeyboard(){
+    let keyboard = new Keyboard();
 
+    Object.assign(keyboard.right, {
+      press:() => {
+        python.faceRight(1);
+        posse.faceRight();
+      },
+      release:() => {
+        if (!keyboard.left.isDown) {
+          python.stop();
+          posse.stop();
+        }
+      }
+    });
+
+    Object.assign(keyboard.left, {
+      press:() => {
+        python.faceLeft(1);
+        posse.faceLeft();
+      },
+      release:() => {
+        if (!keyboard.right.isDown) {
+          python.stop();
+          posse.stop();
+        }
+      }
+    });
+}
 
 // data
 let names = [
