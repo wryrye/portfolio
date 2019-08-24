@@ -11,6 +11,8 @@ export default class Question {
       textObj.visible = false;
       this.textObj = textObj;
   
+      if (this.answers == null) return;
+
       answers.forEach((answer, index) => {  
         answer.textObj.on('mouseover', () => {
           this.triangle.x = answer.textObj.x - innerHeight * .025;
@@ -50,6 +52,8 @@ export default class Question {
   
     attach(app) {
       app.stage.addChild(this.textObj);
+
+      if (this.answers == null) return;
       app.stage.addChild(this.triangle);
       this.answers.forEach((answer) => {
         app.stage.addChild(answer.textObj);
@@ -58,6 +62,8 @@ export default class Question {
   
     remove() {
       this.textObj.destroy();
+
+      if (this.answers == null) return;
       this.triangle.destroy();
       this.answers.forEach((answer) => {
         answer.textObj.destroy();
@@ -66,6 +72,8 @@ export default class Question {
 
     show() {
       this.textObj.visible = true;
+
+      if (this.answers == null) return;
       this.triangle.visible = true;
       this.answers.forEach((answer, index) => {
         answer.textObj.visible = true;
@@ -74,9 +82,15 @@ export default class Question {
 
     hide() {
       this.textObj.visible = false;
+
+      if (this.answers == null) return;
       this.triangle.visible = false;
       this.answers.forEach((answer, index) => {
         answer.textObj.visible = false;
       });
+    }
+
+    move(vx) {
+      this.textObj.x += vx;
     }
   }

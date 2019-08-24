@@ -88,7 +88,7 @@ function gameLoop(delta) {
 
 /** game states **/
 
-let wait = 0;
+let waitTitle = 0;
 
 function intro(delta) {
   const ratio = 16 / 9;
@@ -99,7 +99,7 @@ function intro(delta) {
     title.height += 6;
   } else {
     // wait awhile
-    if (wait++ > 200) {
+    if (waitTitle++ > 200) {
       // fade out
       title.alpha -= .01;
     }
@@ -128,7 +128,7 @@ function play(delta) {
     ogre.x -= python.sprite.vx * 1.5;
   }
 
-  if ((ogre.x - python.sprite.x) < (window.innerWidth * .1)) {
+  if ((ogre.x - python.sprite.x) < (window.innerWidth * .11)) {
     speech.visible = true;
     currentQuestion.show();
   } else {
@@ -138,17 +138,19 @@ function play(delta) {
 }
 
 function flee(delta) {
+  currentQuestion.show();
   python.move();
   posse.move();
-  world.x -= python.sprite.vx * 1.5;
+  ogre.x += python.sprite.vx;
+  speech.x += python.sprite.vx;
+  currentQuestion.move(python.sprite.vx);
 }
 
 /** helper methods **/
 
 function inBounds() {
   let newX = python.sprite.x + python.sprite.vx
-  console.log(newX + ", " + (ogre.x - (window.innerWidth * .1)));
-  return newX >= python.startX && newX < (ogre.x - (window.innerWidth * .1) + 1);
+  return newX >= python.startX && newX < (ogre.x - (window.innerWidth * .11) + 1);
 }
 
 function nextQuestion() {
@@ -158,7 +160,6 @@ function nextQuestion() {
 }
 
 function compareColors() {
-  console.log(firstColor == secondColor);
   firstColor == secondColor ? doAction() : resetGame();
 }
 
@@ -167,10 +168,16 @@ function doAction() {
 }
 
 function resetGame() {
-  ogre.texture = resources.madOgre.texture;
-  python.faceLeft(3);
-  posse.faceLeft();
-  state = flee;
+  nextQuestion();
+  currentQuestion.show();
+
+  setTimeout(() => {
+    nextQuestion();
+    ogre.texture = resources.madOgre.texture;
+    python.faceLeft(3);
+    posse.faceLeft();
+    state = flee;
+  }, 1234);
 }
 
 function initKeyboard(){
@@ -237,5 +244,6 @@ let questions = [
   new Question("What is your QUEST?", quests),
   new Question("What is your favorite COLOR?", colors), 
   new Question("CONFIRM your favorite COLOR.", confirm),
-  new Question("GET OUT OF MY SWAMP!!!", confirm)
+  new Question("LIAR!", null),
+  new Question("GET OUT OF MY SWAMP!", null)
 ]
