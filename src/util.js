@@ -1,3 +1,7 @@
+export function distance(x) {
+  return window.innerHeight * x/100
+}
+
 export function showResume(app) {
     showPDF(app, 'ryan_coughlin_resume.pdf');
 }

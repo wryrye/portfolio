@@ -1,17 +1,14 @@
 import * as PIXI from 'pixi.js';
 import createFont from './fonts.js'
-
-function unit(x) {
-  return window.innerHeight * x/100
-}
+import { distance } from './util.js';
 
 export default class Speech {
     constructor(text, answers, bubble) {
       this.text = text;
       this.answers = answers;
   
-      let textObj = new PIXI.Text(text, createFont(0x000000, window.innerHeight * .03, 'bold', 0));
-      textObj.position.set(bubble.x + unit(8), bubble.y + unit(7));
+      let textObj = new PIXI.Text(text, createFont(0x000000, distance(3), 'bold', 0));
+      textObj.position.set(bubble.x + distance(8), bubble.y + distance(7));
       textObj.visible = false;
       this.textObj = textObj;
   
@@ -19,20 +16,20 @@ export default class Speech {
 
       answers.forEach((answer, index) => {  
         answer.textObj.on('mouseover', () => {
-          this.triangle.x = answer.textObj.x - innerHeight * .025;
+          this.triangle.x = answer.textObj.x - distance(2.5);
           this.triangle.y = answer.textObj.y;
         });
   
-        answer.textObj.position.set(bubble.x + unit(8), window.innerHeight * .15 + (window.innerHeight * .05 + index * innerHeight * .04));
+        answer.textObj.position.set(bubble.x + distance(8), (index * distance(4)) + distance(20));
       });
   
       let triangle = new PIXI.Graphics();
       triangle.visible = false;
   
-      triangle.x = this.answers[0].textObj.x - innerHeight * .025;
+      triangle.x = this.answers[0].textObj.x - distance(2.5);
       triangle.y = this.answers[0].textObj.y;
     
-      var triangleWidth = innerHeight * .015,
+      var triangleWidth = distance(1.5),
           triangleHeight = triangleWidth,
           triangleHalfway = triangleWidth/2;
     
