@@ -113,17 +113,20 @@ function intro(delta) {
     posse.stop();
 
     if (title.alpha <= 0) {
-      state = play;
+      python.startX = python.sprite.x;
       initKeyboard();
+      state = play;
     }
   }
 }
 
 function play(delta) {
-  python.move();
-  posse.move();
-  world.x -= python.sprite.vx * 1.5;
-  ogre.x -= python.sprite.vx * 1.5;
+  if (inBounds()) {
+    python.move();
+    posse.move();
+    world.x -= python.sprite.vx * 1.5;
+    ogre.x -= python.sprite.vx * 1.5;
+  }
 
   if ((ogre.x - python.sprite.x) < (window.innerWidth * .1)) {
     speech.visible = true;
@@ -141,6 +144,12 @@ function flee(delta) {
 }
 
 /** helper methods **/
+
+function inBounds() {
+  let newX = python.sprite.x + python.sprite.vx
+  console.log(newX + ", " + (ogre.x - (window.innerWidth * .1)));
+  return newX >= python.startX && newX < (ogre.x - (window.innerWidth * .1) + 1);
+}
 
 function nextQuestion() {
   if (currentQuestion) currentQuestion.remove();

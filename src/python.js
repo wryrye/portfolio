@@ -5,10 +5,12 @@ export default class Python {
     constructor(app, resource) {
       this.stage = app.stage;
       this.animations = app.loader.resources[resource].spritesheet.animations;
+      this.startX = window.innerHeight * .69 - window.innerHeight
+      this.startY = window.innerHeight * .8;
 
       let sprite = new PIXI.AnimatedSprite(this.animations["snake_idle"]);
       sprite.width = sprite.height = window.innerHeight*1.3;
-      sprite.position.set(window.innerHeight * .69 - window.innerHeight, window.innerHeight * .8);
+      sprite.position.set(this.startX, this.startY);
       sprite.anchor.set(0.5);
       sprite.animationSpeed = 0.3;
       sprite.scale.x = 1
