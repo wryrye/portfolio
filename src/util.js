@@ -20,20 +20,22 @@ function showPDF(app, name) {
     var loadingTask = pdfjsLib.getDocument(pdfPath);
     loadingTask.promise.then(function (pdfDocument) {
       // Request a first page
-      return pdfDocument.getPage(1).then(function (pdfPage) {
+      return pdfDocument.getPage(1).then(function (page) {
         // Display page on the existing canvas with 100% scale.
+
+        document.body.style.overflow = 'scroll';
   
         var canvas = document.getElementById('pdfjs');
         canvas.style.display = "inherit"
   
         app.view.style.display = "none";
   
-        var viewport = pdfPage.getViewport(3.0);
-  
         canvas.width = window.innerWidth;
+        var viewport = page.getViewport(canvas.width / page.getViewport(1.0).width);
         canvas.height = viewport.height;
+        
         var ctx = canvas.getContext('2d');
-        var renderTask = pdfPage.render({
+        var renderTask = page.render({
           canvasContext: ctx,
           viewport: viewport
         });

@@ -263,6 +263,10 @@ function resetGame() {
     python.faceLeft(3);
     posse.faceLeft();
     state = flee;
+
+    setTimeout(() => {
+      location.reload();
+    }, 5000);
   }, 1234);
 }
 
