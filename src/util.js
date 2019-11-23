@@ -1,5 +1,5 @@
 export function distance(x) {
-  return window.innerHeight * x/100
+  return window.innerHeight * (x / 100)
 }
 
 export function showResume(app) {

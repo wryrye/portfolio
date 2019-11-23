@@ -9,7 +9,7 @@ import { distance, showResume, showChinese } from './util.js';
 import './styles/stylesheet.css'; 
 
 // pixi sprite variables
-let world, title, python, posse, ogre, bubble;
+let world, title, python, posse, keys, ogre, bubble;
 
 // other game variables
 let aspectRatio, state, currentSpeech, action, firstColor, secondColor;
@@ -31,12 +31,18 @@ let view = app.view,
 
 document.body.appendChild(view);
 
+const arrowKeyFrames = [ 
+  "assets/img/arrow-keys.png",
+  "assets/img/arrow-keys-active.png",
+];
+
 // load assets
 loader
   .add("world", "assets/img/world6.png")
   .add("title", "assets/img/title.png")
   .add("python", "assets/img/snake.json")
   .add("knight", "assets/img/knight.json")
+  .add("arrowKeyFrames", arrowKeyFrames)
   .add("ogre", "assets/img/shrek3.png")
   .add("bubble", "assets/img/speech2.png")
   .add("madOgre", "assets/img/shrek_mad.png")
@@ -59,6 +65,16 @@ function setUp() {
   title.anchor.set(0.5);
   stage.addChild(title);
 
+  keys = new PIXI.AnimatedSprite.fromFrames(arrowKeyFrames);
+  keys.position.set(distance(5), distance(5));
+  keys.visible = false;
+  keys.animationSpeed = 0.017;
+  stage.addChild(keys);
+
+  python = new Python(app, "python");
+
+  posse = new Posse(app, python.sprite, "knight");
+
   let ogreAR = .71;
   ogre = new PIXI.Sprite(resources.ogre.texture);
   ogre.width = distance(50) * ogreAR;
@@ -72,10 +88,6 @@ function setUp() {
   bubble.position.set(innerWidth * .93 - bubble.width, distance(5));
   bubble.visible = false;
   stage.addChild(bubble);
-
-  python = new Python(app, "python");
-
-  posse = new Posse(app, python.sprite, "knight");
 
   loadData();
 
@@ -121,6 +133,8 @@ function intro(delta) {
     if (title.alpha <= 0) {
       python.startX = python.sprite.x;
       initKeyboard();
+      keys.visible = true;
+      keys.play();
       state = play;
     }
   }
@@ -137,6 +151,8 @@ function play(delta) {
   }
 
   if ((ogre.x - python.sprite.x) < (distance(30))) {
+    keys.visible = false;
+    keys.stop();
     bubble.visible = true;
     currentSpeech.show();
   } else {
@@ -182,7 +198,7 @@ function doAction() {
 }
 
 function engageWar() {
-  speeches.push(new Speech("Of you go, then!", null, bubble));
+  speeches.push(new Speech("Off you go, then!", null, bubble));
   nextSpeech();
   currentSpeech.show();
 
