@@ -6,8 +6,12 @@ export default class Speech {
     constructor(text, answers, bubble) {
       this.text = text;
       this.answers = answers;
-  
-      let textObj = new PIXI.Text(text, createFont(0x000000, distance(3), 'bold', 0));
+
+
+      let size = text.startsWith("LIES") ? distance(16) : distance(3);
+      size = text.startsWith("GET") ? distance(8) : size;
+
+      let textObj = new PIXI.Text(text, createFont(0x000000, size, 'bold', 0));
       textObj.position.set(bubble.x + distance(8), bubble.y + distance(7));
       textObj.visible = false;
       this.textObj = textObj;
@@ -20,7 +24,7 @@ export default class Speech {
           this.triangle.y = answer.textObj.y;
         });
   
-        answer.textObj.position.set(bubble.x + distance(8), (index * distance(4)) + distance(20));
+        answer.textObj.position.set(bubble.x + distance(8), (index * distance(5)) + distance(18));
       });
   
       let triangle = new PIXI.Graphics();

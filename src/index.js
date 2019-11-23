@@ -9,7 +9,7 @@ import { distance, showResume, showChinese } from './util.js';
 import './styles/stylesheet.css'; 
 
 // pixi sprite variables
-let world, title, python, posse, keys, ogre, bubble;
+let world, title, python, posse, keys, ogre, bubble, madOgre;
 
 // other game variables
 let aspectRatio, state, currentSpeech, action, firstColor, secondColor;
@@ -36,6 +36,11 @@ const arrowKeyFrames = [
   "assets/img/arrow-keys-active.png",
 ];
 
+const madOgreFrames = [ 
+  "assets/img/shrek_mad2.png",
+  "assets/img/shrek_mad3.png",
+];
+
 // load assets
 loader
   .add("world", "assets/img/world6.png")
@@ -45,7 +50,7 @@ loader
   .add("arrowKeyFrames", arrowKeyFrames)
   .add("ogre", "assets/img/shrek3.png")
   .add("bubble", "assets/img/speech2.png")
-  .add("madOgre", "assets/img/shrek_mad.png")
+  .add("madOgre", madOgreFrames)
   .load(setUp);
 
 function setUp() {
@@ -82,8 +87,15 @@ function setUp() {
   ogre.position.set(innerHeight * 3, distance(45));
   stage.addChild(ogre);
 
+  madOgre = new PIXI.AnimatedSprite.fromFrames(madOgreFrames);
+  madOgre.width = distance(50) * ogreAR;
+  madOgre.height = distance(50);
+  madOgre.position.set(innerHeight * 3, distance(45));
+  madOgre.visible = false;
+  stage.addChild(madOgre);
+
   bubble = new PIXI.Sprite(resources.bubble.texture);
-  bubble.width = distance(75);
+  bubble.width = distance(100);
   bubble.height = distance(50);
   bubble.position.set(innerWidth * .93 - bubble.width, distance(5));
   bubble.visible = false;
@@ -148,6 +160,7 @@ function play(delta) {
     let speed = python.sprite.vx === 0 ? 0: python.sprite.vx > 0 ? 1.5 : -1.5;
     world.x -= speed
     ogre.x -= speed
+    madOgre.x -= speed
   }
 
   if ((ogre.x - python.sprite.x) < (distance(30))) {
@@ -171,7 +184,7 @@ function flee(delta) {
   currentSpeech.show();
   python.move();
   posse.move();
-  ogre.x += python.sprite.vx;
+  madOgre.x += python.sprite.vx;
   bubble.x += python.sprite.vx;
   currentSpeech.move(python.sprite.vx);
 }
@@ -217,7 +230,7 @@ function engageWar() {
 }
 
 function seekGrail() {
-  speeches.push(new Speech("Of you go, then!", null, bubble));
+  speeches.push(new Speech("Off you go, then!", null, bubble));
   nextSpeech();
   currentSpeech.show();
 
@@ -236,7 +249,7 @@ function seekGrail() {
 }
 
 function resetGame() {
-  speeches.push(new Speech("LIAR!", null, bubble));
+  speeches.push(new Speech("LIES!", null, bubble));
   speeches.push(new Speech("GET OUT OF MY SWAMP!", null, bubble));
   nextSpeech();
   currentSpeech.show();
@@ -244,7 +257,9 @@ function resetGame() {
   setTimeout(() => {
     nextSpeech();
     currentSpeech.show();
-    ogre.texture = resources.madOgre.texture;
+    ogre.visible = false;
+    madOgre.visible = true;
+    madOgre.play();
     python.faceLeft(3);
     posse.faceLeft();
     state = flee;

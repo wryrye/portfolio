@@ -6,10 +6,11 @@ export default function createFont(color, size, weight, thickness) {
     fontSize: size,
     fontWeight: weight,
     wordWrap: true,
-    wordWrapWidth: window.innerHeight * .6,
+    wordWrapWidth: window.innerHeight * .9,
     stroke: '#000000',
     strokeThickness: thickness,
-    style: {fill: color}
+    style: {fill: color},
+    // fontStyle: 'italic',
   });
 }
 

@@ -6,7 +6,7 @@ export default class Response {
       this.text = text;
       this.action = action
   
-      let textObj = new PIXI.Text(text, createFont(color, window.innerHeight * .02, "normal", thickness));
+      let textObj = new PIXI.Text(text, createFont(color, window.innerHeight * .03, "normal", thickness));
       textObj.visible = false;
       textObj.interactive = true;
       textObj.style.fill = color;
