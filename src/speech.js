@@ -12,7 +12,7 @@ export default class Speech {
       size = text.startsWith("GET") ? distance(8) : size;
 
       let textObj = new PIXI.Text(text, createFont(0x000000, size, 'bold', 0));
-      textObj.position.set(bubble.x + distance(8), bubble.y + distance(7));
+      textObj.position.set(bubble.x + distance(10), bubble.y + distance(7));
       textObj.visible = false;
       this.textObj = textObj;
   
@@ -24,7 +24,7 @@ export default class Speech {
           this.triangle.y = answer.textObj.y;
         });
   
-        answer.textObj.position.set(bubble.x + distance(8), (index * distance(5)) + distance(18));
+        answer.textObj.position.set(bubble.x + distance(10), (index * distance(5)) + distance(18));
       });
   
       let triangle = new PIXI.Graphics();

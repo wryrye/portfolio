@@ -12,7 +12,8 @@ module.exports = {
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'Ryan Coughlin',
-      template: 'index.html'
+      template: 'index.html',
+      favicon: './favicon.ico'
     }),
     new CopyPlugin([
       { from: 'src/assets', to: 'assets' },

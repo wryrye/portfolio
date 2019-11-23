@@ -47,10 +47,8 @@ loader
   .add("title", "assets/img/title.png")
   .add("python", "assets/img/snake.json")
   .add("knight", "assets/img/knight.json")
-  .add("arrowKeyFrames", arrowKeyFrames)
   .add("ogre", "assets/img/shrek3.png")
   .add("bubble", "assets/img/speech2.png")
-  .add("madOgre", madOgreFrames)
   .load(setUp);
 
 function setUp() {
@@ -71,6 +69,9 @@ function setUp() {
   stage.addChild(title);
 
   keys = new PIXI.AnimatedSprite.fromFrames(arrowKeyFrames);
+  let keysAR = 1.5
+  keys.width = distance(25) * keysAR
+  keys.height = distance(25)
   keys.position.set(distance(5), distance(5));
   keys.visible = false;
   keys.animationSpeed = 0.017;
@@ -95,9 +96,9 @@ function setUp() {
   stage.addChild(madOgre);
 
   bubble = new PIXI.Sprite(resources.bubble.texture);
-  bubble.width = distance(100);
+  bubble.width = distance(105);
   bubble.height = distance(50);
-  bubble.position.set(innerWidth * .93 - bubble.width, distance(5));
+  bubble.position.set(innerWidth * .97 - bubble.width, distance(5));
   bubble.visible = false;
   stage.addChild(bubble);
 
@@ -125,11 +126,11 @@ function intro(delta) {
 
   // expand title
   if (title.height < innerHeight) {
-    title.width += 6 * ratio;
-    title.height += 6;
+    title.width += delta * 10 * ratio;
+    title.height += delta * 10;
   } else {
     // wait awhile
-    if (waitTitle++ > 200) {
+    if ((waitTitle += delta) > 80) {
       // fade out
       title.alpha -= .01;
     }
@@ -153,12 +154,9 @@ function intro(delta) {
 }
 
 function play(delta) {
-  // console.log(delta)
   if (inBounds()) {
     python.move(delta);
     posse.move(delta);
-
-    console.log(delta, python.sprite.vx)
 
     let speed = python.sprite.vx === 0 ? 0:  delta * 3;
     world.x -= speed
@@ -178,18 +176,18 @@ function play(delta) {
 }
 
 function proceed(delta) {
-  python.move();
-  posse.move();
+  python.move(delta);
+  posse.move(delta);
 }
 
 
 function flee(delta) {
   currentSpeech.show();
-  python.move();
-  posse.move();
-  madOgre.x += python.sprite.vx;
-  bubble.x += python.sprite.vx;
-  currentSpeech.move(python.sprite.vx);
+  python.move(delta);
+  posse.move(delta);
+  madOgre.x += delta * python.sprite.vx * 2;
+  bubble.x += delta * python.sprite.vx * 2;
+  currentSpeech.move(delta * python.sprite.vx * 2);
 }
 
 /** helper methods **/
@@ -227,7 +225,7 @@ function engageWar() {
   
     state = proceed;
     setTimeout(() => {
-      window.location = 'https://translation-warfare.herokuapp.com';
+      window.location = 'https://tatoebattle.herokuapp.com/';
     }, 2222);
   }, 1234);
 }
