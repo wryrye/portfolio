@@ -42,9 +42,9 @@ export default class Posse {
       });
     }
     
-    move() {
+    move(delta) {
       this.followers.forEach((follower, index) => {
-        follower.x += this.leader.vx;
+        follower.x += delta * this.leader.vx * 2;
       });
     }
     

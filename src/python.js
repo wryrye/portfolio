@@ -41,8 +41,8 @@ export default class Python {
         this.sprite.play()
     }
 
-    move() {
-        this.sprite.x += this.sprite.vx;
+    move(delta) {
+        this.sprite.x += delta * this.sprite.vx * 2;
     }
 
     stop() {

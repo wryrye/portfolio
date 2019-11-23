@@ -136,8 +136,8 @@ function intro(delta) {
   }
 
   if (python.sprite.x < distance(69)) {
-    python.move();
-    posse.move();
+    python.move(delta);
+    posse.move(delta);
   } else {
     python.stop();
     posse.stop();
@@ -153,11 +153,14 @@ function intro(delta) {
 }
 
 function play(delta) {
+  // console.log(delta)
   if (inBounds()) {
-    python.move();
-    posse.move();
+    python.move(delta);
+    posse.move(delta);
 
-    let speed = python.sprite.vx === 0 ? 0: python.sprite.vx > 0 ? 1.5 : -1.5;
+    console.log(delta, python.sprite.vx)
+
+    let speed = python.sprite.vx === 0 ? 0:  delta * 3;
     world.x -= speed
     ogre.x -= speed
     madOgre.x -= speed
