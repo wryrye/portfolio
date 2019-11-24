@@ -23,7 +23,7 @@ function showPDF(app, name) {
       return pdfDocument.getPage(1).then(function (page) {
         // Display page on the existing canvas with 100% scale.
 
-        document.body.style.overflow = 'scroll';
+        document.body.style.overflowY = 'scroll';
   
         var canvas = document.getElementById('pdfjs');
         canvas.style.display = "inherit"

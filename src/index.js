@@ -158,7 +158,7 @@ function play(delta) {
     python.move(delta);
     posse.move(delta);
 
-    let speed = python.sprite.vx === 0 ? 0:  delta * 3;
+    let speed = python.sprite.vx === 0 ? 0: python.sprite.vx > 0 ? delta * 3 : -delta * 3;
     world.x -= speed
     ogre.x -= speed
     madOgre.x -= speed
