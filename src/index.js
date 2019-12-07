@@ -9,7 +9,7 @@ import { distance, showResume, showChinese } from './util.js';
 import './styles/stylesheet.css'; 
 
 // pixi sprite variables
-let world, title, python, posse, keys, ogre, bubble, madOgre;
+let world, sky, title, python, posse, keys, ogre, bubble, madOgre;
 
 // other game variables
 let aspectRatio, state, currentSpeech, action, firstColor, secondColor;
@@ -44,6 +44,7 @@ const madOgreFrames = [
 // load assets
 loader
   .add("world", "assets/img/world6.png")
+  .add("sky", "assets/img/world7.png")
   .add("title", "assets/img/title.png")
   .add("python", "assets/img/snake.json")
   .add("knight", "assets/img/knight.json")
@@ -57,6 +58,11 @@ function setUp() {
   if (aspectRatio < 1.5 || aspectRatio > 2.15) return;
 
   // set up sprites
+  sky = new PIXI.Sprite(resources.sky.texture);
+  sky.width = innerHeight * 4;
+  sky.height = innerHeight;
+  stage.addChild(sky);
+
   world = new PIXI.Sprite(resources.world.texture);
   world.width = innerHeight * 4;
   world.height = innerHeight;
@@ -153,12 +159,32 @@ function intro(delta) {
   }
 }
 
+let dayLength = 500;
+let dayTimer = 0;
+let isDay = true;
+
 function play(delta) {
+
+  // time between starting transitions
+  if ((dayTimer += delta) > dayLength) {
+    if (isDay) {
+      world.alpha -= .002;
+    } else {
+      world.alpha += .002;
+    }
+
+    if (world.alpha <= 0  || 1 <= world.alpha) {
+      isDay = !isDay;
+      dayTimer = 0;
+    } 
+  } 
+
   if (inBounds()) {
     python.move(delta);
     posse.move(delta);
 
     let speed = python.sprite.vx === 0 ? 0: python.sprite.vx > 0 ? delta * 3 : -delta * 3;
+    sky.x -= speed
     world.x -= speed
     ogre.x -= speed
     madOgre.x -= speed
