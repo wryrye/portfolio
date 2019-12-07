@@ -173,7 +173,7 @@ function play(delta) {
       world.alpha += .002;
     }
 
-    if (world.alpha <= 0  || 1 <= world.alpha) {
+    if (world.alpha <= .10  || 1 <= world.alpha) {
       isDay = !isDay;
       dayTimer = 0;
     } 
