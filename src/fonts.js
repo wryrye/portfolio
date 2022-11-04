@@ -1,15 +1,15 @@
-import * as PIXI from 'pixi.js';
+import * as PIXI from "pixi.js";
 
 export default function createFont(color, size, weight, thickness) {
   return new PIXI.TextStyle({
-    fontFamily: 'Press Start 2P',
+    fontFamily: "Press Start 2P",
     fontSize: size,
     fontWeight: weight,
     wordWrap: true,
-    wordWrapWidth: window.innerHeight * .9,
-    stroke: '#000000',
+    wordWrapWidth: window.innerHeight * 0.9,
+    stroke: "#000000",
     strokeThickness: thickness,
-    style: {fill: color},
+    style: { fill: color },
     // fontStyle: 'italic',
   });
 }
@@ -21,7 +21,7 @@ export default function createFont(color, size, weight, thickness) {
 //     wordWrap: true,
 //     wordWrapWidth: window.innerHeight * .6
 //   });
-  
+
 // export const regP2 = new PIXI.TextStyle({
 //     fontFamily: 'Press Start 2P',
 //     fontSize: window.innerHeight * .02,
