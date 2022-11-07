@@ -6,7 +6,6 @@ const CopyPlugin = require("copy-webpack-plugin");
 module.exports = {
   entry: {
     main: "./src/index.js",
-    "pdf.worker": "pdfjs-dist/build/pdf.worker.entry",
   },
   plugins: [
     // new CleanWebpackPlugin(),
@@ -28,5 +27,9 @@ module.exports = {
         use: ["style-loader", "css-loader"],
       },
     ],
+  },
+  devServer: {
+    open: true,
+    contentBase: path.join(__dirname, "src/assets"),
   },
 };

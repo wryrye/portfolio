@@ -20,7 +20,7 @@ export default class Speech {
     answers.forEach((answer, index) => {
       answer.textObj.on("mouseover", () => {
         this.triangle.x = answer.textObj.x - distance(2.5);
-        this.triangle.y = answer.textObj.y;
+        this.triangle.y = answer.textObj.y + distance(0.75);
       });
 
       answer.textObj.position.set(
@@ -33,7 +33,7 @@ export default class Speech {
     triangle.visible = false;
 
     triangle.x = this.answers[0].textObj.x - distance(2.5);
-    triangle.y = this.answers[0].textObj.y;
+    triangle.y = this.answers[0].textObj.y + distance(0.75);
 
     var triangleWidth = distance(1.5),
       triangleHeight = triangleWidth,

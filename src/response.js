@@ -12,7 +12,7 @@ export default class Response {
     );
     textObj.visible = false;
     textObj.interactive = true;
-    textObj.style.fill = color;
+    // textObj.style.fill = color;
 
     textObj.on("click", () => {
       this.action();

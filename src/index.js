@@ -5,8 +5,9 @@ import Response from "./response.js";
 import Python from "./python.js";
 import Posse from "./posse.js";
 
-import { distance, showResume, showChinese } from "./util.js";
+import { distance } from "./util.js";
 import "./styles/stylesheet.css";
+import createFont from "./fonts.js";
 
 // pixi sprite variables
 let world, sky, title, python, posse, keys, ogre, bubble, madOgre;
@@ -18,10 +19,15 @@ let aspectRatio, state, currentSpeech, action, firstColor, secondColor;
 let app = new PIXI.Application({
   width: innerWidth,
   height: innerHeight,
+  resizeTo: window,
   antialias: true,
   transparent: false,
   resolution: 1,
 });
+
+if (process.env.NODE_ENV === "development") {
+  app.ticker.speed = 5;
+}
 
 // aliases
 let view = app.view,
@@ -55,7 +61,21 @@ loader
 function setUp() {
   // unsupported ratios
   aspectRatio = innerWidth / innerHeight;
-  if (aspectRatio < 1.5 || aspectRatio > 2.15) return;
+  if (aspectRatio < 1.5 || aspectRatio > 2.15) {
+    let textObj = new PIXI.Text(
+      "Rotate?",
+      createFont(0xffffff, distance(5), "bold", 0)
+    );
+    textObj.position.set(innerWidth * 0.5, distance(50));
+    textObj.anchor.set(0.5);
+    app.stage.addChild(textObj);
+
+    window.onresize = () => {
+      location.reload();
+    };
+
+    return;
+  }
 
   // set up sprites
   sky = new PIXI.Sprite(resources.sky.texture);
@@ -99,6 +119,7 @@ function setUp() {
   madOgre.height = distance(50);
   madOgre.position.set(innerHeight * 3, distance(45));
   madOgre.visible = false;
+  madOgre.animationSpeed = 0.1;
   stage.addChild(madOgre);
 
   bubble = new PIXI.Sprite(resources.bubble.texture);
@@ -238,6 +259,44 @@ function compareColors() {
 
 function doAction() {
   action(app);
+}
+
+function showResume(app) {
+  speeches.push(new Speech("Off you go, then!", null, bubble));
+  nextSpeech();
+  currentSpeech.show();
+
+  setTimeout(() => {
+    currentSpeech.remove();
+    bubble.visible = false;
+    python.faceRight(3);
+    posse.faceRight();
+    ogre.vx = 0;
+
+    state = proceed;
+    setTimeout(() => {
+      window.location = "./assets/docs/ryan_coughlin_resume.pdf";
+    }, 2222);
+  }, 1234);
+}
+
+function showChinese(app) {
+  speeches.push(new Speech("Off you go, then!", null, bubble));
+  nextSpeech();
+  currentSpeech.show();
+
+  setTimeout(() => {
+    currentSpeech.remove();
+    bubble.visible = false;
+    python.faceRight(3);
+    posse.faceRight();
+    ogre.vx = 0;
+
+    state = proceed;
+    setTimeout(() => {
+      window.location = "./assets/docs/ryan_coughlin_sample_chinese.pdf";
+    }, 2222);
+  }, 1234);
 }
 
 function engageWar() {
