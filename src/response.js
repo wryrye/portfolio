@@ -14,7 +14,7 @@ export default class Response {
     textObj.interactive = true;
     // textObj.style.fill = color;
 
-    textObj.on("click", () => {
+    textObj.on("pointertap", () => {
       this.action();
       callback();
     });

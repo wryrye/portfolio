@@ -61,7 +61,7 @@ loader
 function setUp() {
   // unsupported ratios
   aspectRatio = innerWidth / innerHeight;
-  if (aspectRatio < 1.5 || aspectRatio > 2.15) {
+  if (aspectRatio < 1.5 || aspectRatio > 3) {
     let textObj = new PIXI.Text(
       "Rotate?",
       createFont(0xffffff, distance(5), "bold", 0)
@@ -361,6 +361,18 @@ function resetGame() {
 
 function initKeyboard() {
   let keyboard = new Keyboard();
+
+  window.addEventListener("touchstart", function (event) {
+    if (keys.visible) {
+      python.faceRight(aspectRatio * 0.821341 - 1.183005);
+      posse.faceRight();
+    }
+  });
+
+  window.addEventListener("touchend", function (event) {
+    python.stop();
+    posse.stop();
+  });
 
   Object.assign(keyboard.right, {
     press: () => {

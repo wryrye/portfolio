@@ -54,14 +54,14 @@ export default class Posse {
 
   faceLeft() {
     this.followers.forEach((follower, index) => {
-      if (follower.scale.x > 1) follower.scale.x *= -1;
+      if (follower.scale.x > 0) follower.scale.x *= -1;
       this.play();
     });
   }
 
   faceRight() {
     this.followers.forEach((follower, index) => {
-      if (follower.scale.x < 1) follower.scale.x *= -1;
+      if (follower.scale.x < 0) follower.scale.x *= -1;
       this.play();
     });
   }
